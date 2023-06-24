@@ -5,6 +5,7 @@ django-cors-headers==4.1.0
 django-filter==23.2
 djangorestframework==3.14.0
 importlib-metadata==6.7.0
+JSON-log-formatter==0.5.2
 Markdown==3.4.3
 mysqlclient==2.2.0
 python-dotenv==1.0.0
