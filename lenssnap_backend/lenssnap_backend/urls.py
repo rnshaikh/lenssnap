@@ -19,6 +19,10 @@ from django.urls import path
 from django.conf.urls.static import static
 from django.conf import settings
 
+admin.site.site_header = "Lenssnap Admin"
+admin.site.site_title = "Lenssnap Admin Portal"
+admin.site.index_title = "Welcome to Lenssnap Admin Portal"
+
 urlpatterns = [
     path('admin/', admin.site.urls),
 ]
