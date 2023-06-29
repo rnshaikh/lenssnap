@@ -6,7 +6,7 @@ from django.utils import timezone
 
 class UserManager(BaseUserManager):
 
-    def create_user(self, email, password=None, **kwargs):
+    def create_user(self, email, password=None, first_name=None, last_name=None, **kwargs):
 
         if password:
             validate_password(password)
@@ -18,9 +18,9 @@ class UserManager(BaseUserManager):
         user.save()
         return user
 
-    def create_superuser(self, email, password, **kwargs):
+    def create_superuser(self, email, password, first_name, last_name, **kwargs):
 
-        user = self.create_user(email, password, **kwargs)
+        user = self.create_user(email, password, first_name, last_name,**kwargs)
         user.is_superuser = True
         user.is_staff = True
         user.save()
@@ -40,10 +40,11 @@ class User(AbstractBaseUser, PermissionsMixin):
     date_joined = models.DateTimeField(default=timezone.now, blank=True)
     is_superuser = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
-    avatar = models.URLField(blank=True, null=True)
+    picture = models.URLField(blank=True, null=True)
     bio = models.CharField(max_length=2045, blank=True, null=True)
     password = models.CharField(max_length=256, blank=True, null=True)
 
+    REQUIRED_FIELDS = ['first_name', 'last_name']
     USERNAME_FIELD = 'email'
     objects = UserManager()
 
