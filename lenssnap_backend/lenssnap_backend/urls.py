@@ -15,12 +15,17 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import include, path, re_path
 from django.conf.urls.static import static
 from django.conf import settings
 
+admin.site.site_header = "Lenssnap Admin"
+admin.site.site_title = "Lenssnap Admin Portal"
+admin.site.index_title = "Welcome to Lenssnap Admin Portal"
+
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('auth/', include('drf_social_oauth2.urls'), name='drf')
 ]
 
 if settings.DEBUG:
