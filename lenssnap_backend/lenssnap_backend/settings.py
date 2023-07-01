@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'social_django',
     'drf_social_oauth2',
     'user_management',
+    'pin_management'
 ]
 
 MIDDLEWARE = [
@@ -164,7 +165,8 @@ REST_FRAMEWORK = {
     "DEFAULT_THROTTLE_RATES": {
         'anon': "50/sec",
         'user': '100/sec'
-    }
+    },
+    "DEFAULT_PAGINATION_CLASS" : 'lenssnap_backend.custom_pagination.StandardPageNumberPagination'
 }
 
 

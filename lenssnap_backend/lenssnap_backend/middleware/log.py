@@ -3,6 +3,9 @@ import json
 import socket
 import time
 
+from django.http import JsonResponse
+
+
 logger = logging.getLogger('debug_logger')
 
 
@@ -12,9 +15,11 @@ class RequestResponseLogMiddleware:
         self.get_response = get_response
 
     def process_exception(self, request, exception):
-
-        logger.exception(msg="unhandled exception", extra=str(exception))
-        return exception
+        try:
+            raise exception
+        except Exception as e:
+            logger.exception("Unhandled Exception: " + str(e))
+            return JsonResponse({"msg": str(e)}, status=500)
 
     def __call__(self, request):
         start_time = time.time()
