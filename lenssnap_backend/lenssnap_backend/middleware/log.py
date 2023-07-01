@@ -31,11 +31,12 @@ class RequestResponseLogMiddleware:
         }
 
         if 'api/' in str(request.get_full_path()):
-            request_body = json.loads(request.body.decode('utf-8')) if request.body else {}
-            log_data['request_body'] = request_body
+            if request.headers.get('content-type', None) == "application/json":
+                request_body = json.loads(request.body.decode('utf-8')) if request.body else {}
+                log_data['request_body'] = request_body
         response = self.get_response(request)
 
-        if response and response["content-type"] == "application/json":
+        if response and response.get("content-type") == "application/json":
             response_body = json.loads(response.content.decode("utf-8"))
             log_data['response_body'] = response_body
 

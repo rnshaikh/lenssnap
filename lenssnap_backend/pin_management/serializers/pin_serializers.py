@@ -10,3 +10,12 @@ class PinSerializerReadOnly(serializers.ModelSerializer):
         fields = ('id', 'file', 'description', 'created_at',
                   'updated_at', 'created_by', 'updated_by')
         read_only_fields = fields
+
+
+class PinSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Pin
+        fields = ('id', 'file', 'description', 'created_at',
+                  'updated_at', 'created_by', 'updated_by')
+        read_only_fields = ('id', 'created_at', 'updated_at')
