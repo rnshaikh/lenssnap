@@ -25,7 +25,8 @@ admin.site.index_title = "Welcome to Lenssnap Admin Portal"
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('auth/', include('drf_social_oauth2.urls'), name='drf')
+    path('auth/', include('drf_social_oauth2.urls'), name='drf'),
+    path('api/', include('pin_management.urls'), name='pin')
 ]
 
 if settings.DEBUG:

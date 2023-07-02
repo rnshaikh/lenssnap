@@ -3,6 +3,9 @@ import json
 import socket
 import time
 
+from django.http import JsonResponse
+
+
 logger = logging.getLogger('debug_logger')
 
 
@@ -12,9 +15,11 @@ class RequestResponseLogMiddleware:
         self.get_response = get_response
 
     def process_exception(self, request, exception):
-
-        logger.exception(msg="unhandled exception", extra=str(exception))
-        return exception
+        try:
+            raise exception
+        except Exception as e:
+            logger.exception("Unhandled Exception: " + str(e))
+            return JsonResponse({"msg": str(e)}, status=500)
 
     def __call__(self, request):
         start_time = time.time()
@@ -26,11 +31,12 @@ class RequestResponseLogMiddleware:
         }
 
         if 'api/' in str(request.get_full_path()):
-            request_body = json.loads(request.body.decode('utf-8')) if request.body else {}
-            log_data['request_body'] = request_body
+            if request.headers.get('content-type', None) == "application/json":
+                request_body = json.loads(request.body.decode('utf-8')) if request.body else {}
+                log_data['request_body'] = request_body
         response = self.get_response(request)
 
-        if response and response["content-type"] == "application/json":
+        if response and response.get("content-type") == "application/json":
             response_body = json.loads(response.content.decode("utf-8"))
             log_data['response_body'] = response_body
 
