@@ -7,6 +7,7 @@ from rest_framework.parsers import JSONParser, FormParser, MultiPartParser
 
 from pin_management.models import Pin
 from pin_management.serializers import PinSerializerReadOnly, PinSerializer
+from pin_management.system_error import check_pin_update_error
 
 
 class PinList(viewsets.ModelViewSet):
@@ -57,7 +58,11 @@ class PinList(viewsets.ModelViewSet):
 
         pin = get_object_or_404(Pin, id=pk)
         data = request.data
-        data['updated_by'] = request.user
+        data['updated_by'] = request.user.id
+        errors = check_pin_update_error(data, pin)
+        if errors:
+            return Response(errors, status=status.HTTP_400_BAD_REQUEST)
+
         serializer = PinSerializer(pin, data=data, partial=True)
         if serializer.is_valid():
             serializer.save()
@@ -70,7 +75,7 @@ class PinList(viewsets.ModelViewSet):
     def update(self, request, pk):
         return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
-    def delete(self, request, pk):
+    def destroy(self, request, pk):
         pin = get_object_or_404(Pin, id=pk)
         pin.delete()
         return Response({
