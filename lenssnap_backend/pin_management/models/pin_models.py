@@ -1,5 +1,7 @@
 from django.db import models
+from django.contrib.contenttypes.fields import GenericRelation
 from lenssnap_backend.model_mixins import CreatedInfo, UpdatedInfo
+from comment_management.models import Comment
 
 
 def user_directory_path(instance, filename):
@@ -12,6 +14,8 @@ class Pin(CreatedInfo, UpdatedInfo):
 
     file = models.FileField(upload_to=user_directory_path)
     description = models.CharField(max_length=256, blank=True, null=True)
+
+    comments = GenericRelation(Comment)
 
     class Meta:
         ordering = ('-created_at', )
