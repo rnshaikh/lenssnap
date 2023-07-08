@@ -2,6 +2,7 @@ from rest_framework import serializers
 from comment_management.models import Comment
 from django.contrib.contenttypes.models import ContentType
 from pin_management.models import Pin
+from user_management.serializers import UserSerializerReadOnly
 
 
 class CommentObjectRelatedField(serializers.RelatedField):
@@ -30,6 +31,8 @@ class CommentSerializer(serializers.ModelSerializer):
 class CommentSerializerReadOnly(serializers.ModelSerializer):
 
     content_object = CommentObjectRelatedField(read_only=True)
+    created_by = UserSerializerReadOnly()
+    updated_by = UserSerializerReadOnly()
 
     class Meta:
         model = Comment
@@ -45,4 +48,21 @@ class CommentUpdateSerializer(serializers.ModelSerializer):
         fields = ('id', 'created_by', 'updated_by', 'content')
         read_only_fields = ('id', 'created_by')
 
+
+class PinCommentSerializer(serializers.ModelSerializer):
+
+    replies = serializers.SerializerMethodField()
+    created_by = UserSerializerReadOnly()
+    updated_by = UserSerializerReadOnly()
+
+    class Meta:
+        model = Comment
+        fields = ('id', 'content', 'created_by', 'created_at',
+                  'updated_by', 'updated_at', 'replies')
+        read_only_fields = fields
+
+    def get_replies(self, instance):
+
+        objs = instance.replies.all()[:3]
+        return PinCommentSerializer(objs, many=True).data
 

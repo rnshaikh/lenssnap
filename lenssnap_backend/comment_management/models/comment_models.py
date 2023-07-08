@@ -15,3 +15,6 @@ class Comment(CreatedInfo, UpdatedInfo):
                                      on_delete=models.CASCADE)
     object_id = models.PositiveIntegerField()
     content_object = GenericForeignKey('content_type', 'object_id')
+
+    class Meta:
+        ordering = ('-created_at',)

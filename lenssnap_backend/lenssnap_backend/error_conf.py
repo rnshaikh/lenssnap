@@ -1,5 +1,5 @@
 PIN_CANT_UPDATE = {
-    "msg": "you are not authorized to update pin",
+    "msg": "you are not authorized to do given action",
     "error_code": 101
 }
 
@@ -21,4 +21,9 @@ NOT_FOUND = {
 CANT_UPDATE = {
     "msg": "Not authorized to update.",
     "error_code": 105
+}
+
+PARENT_NOT_FOUND = {
+    "msg": "Parent comment not found.",
+    "error_code": 106
 }

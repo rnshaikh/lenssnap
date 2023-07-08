@@ -14,6 +14,12 @@ def comment_creation_error_check(data):
     try:
         pin = data.get('content_type').objects.get(id=data.get('content_object'))
         data['content_object'] = pin
+
+        if data.get('parent', None):
+            parent_comment = pin.comments.filter(id=data.get('parent'))
+            if not parent_comment:
+                return error_conf.PARENT_NOT_FOUND
+
     except:
         return error_conf.NOT_FOUND
 
