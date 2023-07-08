@@ -1,5 +1,7 @@
+from django.db.models import Subquery, OuterRef, Prefetch
 from django.shortcuts import get_object_or_404
 
+from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import status, viewsets
@@ -8,6 +10,9 @@ from rest_framework.parsers import JSONParser, FormParser, MultiPartParser
 from pin_management.models import Pin
 from pin_management.serializers import PinSerializerReadOnly, PinSerializer
 from pin_management.system_error import check_pin_update_error
+
+from comment_management.models import Comment
+from comment_management.serializers import PinCommentSerializer
 
 
 class PinList(viewsets.ModelViewSet):
@@ -80,4 +85,18 @@ class PinList(viewsets.ModelViewSet):
         pin.delete()
         return Response({
             "msg": "pin deleted successfully."
+        })
+
+    @action(detail=True, methods=['GET'])
+    def comments(self, request, pk):
+
+        pin = get_object_or_404(Pin, id=pk)
+        comments = pin.comments.filter(parent=None).select_related().prefetch_related(
+                    'replies',
+                    ).order_by('-created_at')
+        page = self.paginate_queryset(comments)
+        serializer = PinCommentSerializer(page, many=True)
+        return Response({
+            "msg": "pin comments fetched successfully.",
+            "data": self.get_paginated_response(serializer.data).data
         })

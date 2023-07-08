@@ -49,7 +49,8 @@ INSTALLED_APPS = [
     'social_django',
     'drf_social_oauth2',
     'user_management',
-    'pin_management'
+    'pin_management',
+    'comment_management'
 ]
 
 MIDDLEWARE = [
