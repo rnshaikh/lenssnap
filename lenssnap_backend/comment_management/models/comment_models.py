@@ -1,6 +1,9 @@
 from django.db import models
-from django.contrib.contenttypes.fields import GenericForeignKey
+from django.contrib.contenttypes.fields import (GenericForeignKey,
+                                                GenericRelation)
 from django.contrib.contenttypes.models import ContentType
+
+from like_management.models import Like
 
 from lenssnap_backend.model_mixins import CreatedInfo, UpdatedInfo
 
@@ -15,6 +18,7 @@ class Comment(CreatedInfo, UpdatedInfo):
                                      on_delete=models.CASCADE)
     object_id = models.PositiveIntegerField()
     content_object = GenericForeignKey('content_type', 'object_id')
+    likes = GenericRelation(Like)
 
     class Meta:
         ordering = ('-created_at',)
