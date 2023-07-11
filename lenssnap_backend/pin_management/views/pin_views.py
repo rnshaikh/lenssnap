@@ -1,4 +1,4 @@
-from django.db.models import Subquery, OuterRef, Prefetch
+from django.db.models import Subquery, OuterRef, Prefetch, Count
 from django.shortcuts import get_object_or_404
 
 from rest_framework.decorators import action
@@ -12,7 +12,8 @@ from pin_management.serializers import PinSerializerReadOnly, PinSerializer
 from pin_management.system_error import check_pin_update_error
 
 from comment_management.models import Comment
-from comment_management.serializers import PinCommentSerializer
+from comment_management.serializers import (PinCommentSerializer, )
+from like_management.serializers import (PinLikeSerializer, )
 
 
 class PinList(viewsets.ModelViewSet):
@@ -25,7 +26,8 @@ class PinList(viewsets.ModelViewSet):
 
     def list(self, request):
 
-        pins = Pin.objects.filter()
+        pins = Pin.objects.select_related().filter().annotate(likes_count=Count('likes', distinct=True),
+                                                              comments_count=Count('comments', distinct=True)).order_by('-created_at')
         page = self.paginate_queryset(pins)
         serializer = PinSerializerReadOnly(page, many=True)
 
@@ -100,3 +102,21 @@ class PinList(viewsets.ModelViewSet):
             "msg": "pin comments fetched successfully.",
             "data": self.get_paginated_response(serializer.data).data
         })
+
+    @action(detail=True, methods=['GET'])
+    def likes(self, request, pk):
+
+        pin = get_object_or_404(Pin, id=pk)
+        likes = pin.likes.select_related().order_by('-created_at')
+        page = self.paginate_queryset(likes)
+        serializer = PinLikeSerializer(page, many=True)
+        return Response({
+            "msg": "pin likes fetched successfully",
+            "data": self.get_paginated_response(serializer.data).data
+        })
+
+
+
+
+
+

@@ -8,11 +8,14 @@ class PinSerializerReadOnly(serializers.ModelSerializer):
 
     created_by = UserSerializerReadOnly()
     updated_by = UserSerializerReadOnly()
+    likes_count = serializers.IntegerField(required=False)
+    comments_count = serializers.IntegerField(required=False)
 
     class Meta:
         model = Pin
         fields = ('id', 'file', 'description', 'created_at',
-                  'updated_at', 'created_by', 'updated_by')
+                  'updated_at', 'created_by', 'updated_by',
+                  'likes_count', 'comments_count')
         read_only_fields = fields
 
 
