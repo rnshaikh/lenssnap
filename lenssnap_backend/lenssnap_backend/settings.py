@@ -50,7 +50,8 @@ INSTALLED_APPS = [
     'drf_social_oauth2',
     'user_management',
     'pin_management',
-    'comment_management'
+    'comment_management',
+    'like_management',
 ]
 
 MIDDLEWARE = [
