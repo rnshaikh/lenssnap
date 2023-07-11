@@ -1,4 +1,5 @@
 
+from django.db.models import Count
 from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
 from rest_framework import viewsets, status
@@ -89,7 +90,7 @@ class CommentViewset(viewsets.ModelViewSet):
     def replies(self, request, pk):
 
         comment = get_object_or_404(Comment, id=pk)
-        replies = comment.replies.filter().order_by('-created_at')
+        replies = comment.replies.filter().annotate(likes_count=Count('likes', distinct=True)).order_by('-created_at')
         page = self.paginate_queryset(replies)
         serializer = PinCommentSerializer(page, many=True)
         return Response({

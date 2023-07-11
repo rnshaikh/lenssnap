@@ -92,10 +92,12 @@ class PinList(viewsets.ModelViewSet):
     @action(detail=True, methods=['GET'])
     def comments(self, request, pk):
 
+        import pdb
+        pdb.set_trace()
         pin = get_object_or_404(Pin, id=pk)
         comments = pin.comments.filter(parent=None).select_related().prefetch_related(
                     'replies',
-                    ).order_by('-created_at')
+                    ).annotate(likes_count=Count('likes', distinct=True)).order_by('-created_at')
         page = self.paginate_queryset(comments)
         serializer = PinCommentSerializer(page, many=True)
         return Response({
