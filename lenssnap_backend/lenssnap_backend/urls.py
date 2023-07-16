@@ -28,7 +28,8 @@ urlpatterns = [
     path('auth/', include('drf_social_oauth2.urls'), name='drf'),
     path('api/', include('pin_management.urls'), name='pin'),
     path('api/', include('comment_management.urls'), name='comment'),
-    path('api/', include('like_management.urls'), name='like')
+    path('api/', include('like_management.urls'), name='like'),
+    path('api/', include('user_management.urls'), name='user')
 ]
 
 if settings.DEBUG:

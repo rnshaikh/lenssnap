@@ -50,3 +50,22 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return self.email
+
+
+class Follower(models.Model):
+
+    followed_by = models.ForeignKey(User, on_delete=models.CASCADE,
+                                    related_name="followers_by")
+    followed_to = models.ForeignKey(User, on_delete=models.CASCADE,
+                                    related_name="followers_to")
+    created_at = models.DateTimeField(auto_now_add=True, null=True)
+
+    class Meta:
+
+        ordering = ('-created_at', )
+        unique_together = ('followed_by', 'followed_to')
+
+    def __str__(self):
+        return self.followed_by.email + "-" + self.followed_to.email
+
+
