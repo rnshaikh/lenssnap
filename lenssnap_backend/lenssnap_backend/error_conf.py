@@ -27,3 +27,8 @@ PARENT_NOT_FOUND = {
     "msg": "Parent comment not found.",
     "error_code": 106
 }
+
+USER_FOLLOWED_ERROR = {
+    "msg": "User should not follow himself",
+    "error_code": 107
+}
