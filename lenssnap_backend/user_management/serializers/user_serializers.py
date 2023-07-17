@@ -35,3 +35,15 @@ class FollowingSerializerReadOnly(serializers.ModelSerializer):
         model = Follower
         fields = ('id', 'followed_to')
         read_only_fields = fields
+
+
+class UserHomeTimeLineSerializer(serializers.ModelSerializer):
+
+    followers_count = serializers.IntegerField()
+    following_count = serializers.IntegerField()
+    pins_count = serializers.IntegerField()
+
+    class Meta:
+        model = User
+        fields = ('id', 'first_name', 'last_name', 'email', 'picture',
+                  'bio', 'followers_count', 'following_count', 'pins_count')
