@@ -7,6 +7,7 @@ from user_management import views
 
 router = DefaultRouter()
 router.register(r'followers', views.FollowerList, basename='follower')
+router.register(r'hometimelines', views.HomeTimeLineView, basename='hometimeline')
 
 urlpatterns = [
     path('', include(router.urls))

@@ -25,9 +25,12 @@ class PinList(viewsets.ModelViewSet):
     model = Pin
 
     def list(self, request):
+        user = request.query_params.get('user', None)
+        if not user:
+            user = request.user.id
 
-        pins = Pin.objects.select_related().filter().annotate(likes_count=Count('likes', distinct=True),
-                                                              comments_count=Count('comments', distinct=True)).order_by('-created_at')
+        pins = Pin.objects.select_related().filter(created_by=user).annotate(likes_count=Count('likes', distinct=True),
+                                                                             comments_count=Count('comments', distinct=True)).order_by('-created_at')
         page = self.paginate_queryset(pins)
         serializer = PinSerializerReadOnly(page, many=True)
 

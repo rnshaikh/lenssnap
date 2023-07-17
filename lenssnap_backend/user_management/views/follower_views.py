@@ -1,5 +1,6 @@
 
 from django.shortcuts import get_object_or_404
+from django.db.models import Count, Sum
 
 from rest_framework.response import Response
 from rest_framework import status, viewsets
@@ -7,13 +8,54 @@ from rest_framework.decorators import action
 
 from rest_framework.permissions import IsAuthenticated
 
-from user_management.models import Follower
+from user_management.models import (Follower, User)
 from user_management.serializers import (FollowerSerializer,
                                          FollowerSerializerReadOnly,
-                                         FollowingSerializerReadOnly)
+                                         FollowingSerializerReadOnly,
+                                         UserHomeTimeLineSerializer)
 from user_management.system_error import check_follower_error
 
 from lenssnap_backend.custom_pagination import StandardPageNumberPagination
+
+
+class HomeTimeLineView(viewsets.ModelViewSet):
+
+    model = User
+    queryset = User.objects.all()
+    permission_classes = (IsAuthenticated, )
+    serializer = UserHomeTimeLineSerializer
+
+    def list(self, request):
+
+        user = request.user.id
+        user_param = request.query_params.get('user', None)
+        if user_param:
+            user = user_param
+
+        users = User.objects.filter(id=user).annotate(
+            pins_count=Count('created_pins__id', distinct=True),
+            following_count=Count('followers_by__id', distinct=True),
+            followers_count=Count('followers_to__id', distinct=True)
+        )
+        user = users[0]
+        serializer = UserHomeTimeLineSerializer(user)
+        return Response({
+            "msg": "user hometimeline fetched successfully.",
+            "data": serializer.data
+        })
+
+    def create(self, request, pk):
+        return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
+    def update(self, request, pk):
+        return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
+    def partial_update(self, request, pk):
+        return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
+    def destroy(self, request, pk):
+        return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
 
 
 class FollowerList(viewsets.ModelViewSet):
