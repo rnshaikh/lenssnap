@@ -1,4 +1,5 @@
 
+from django.core.cache import cache
 from django.db.models import Count
 
 from rest_framework.response import Response
@@ -12,6 +13,9 @@ from pin_management.models import Pin
 from pin_management.serializers import PinSerializerReadOnly
 
 from lenssnap_backend.custom_pagination import StandardPageNumberPagination
+from lenssnap_backend.cache_utils import Cache
+
+cache_obj = Cache()
 
 
 class HomeTimeLineView(viewsets.ModelViewSet):
@@ -62,13 +66,18 @@ class UserTimeLineView(viewsets.ModelViewSet):
     pagination_class = StandardPageNumberPagination
 
     def list(self, request):
+        user = request.user.id
+        user_cache = cache.get(user, None)
+        if user_cache and user_cache.get('user_timeline'):
+            pins = user_cache.get('user_timeline')
+        else:
+            following_ids = request.user.followers_by.all().values_list('followed_to', flat=True)
+            pins = Pin.objects.filter(created_by__in=following_ids)
+            pins = PinSerializerReadOnly(pins, many=True)
+            cache_obj.load_user_data(request.user)
 
-        following_ids = request.user.followers_by.all().values_list('followed_to', flat=True)
-        pins = Pin.objects.filter(created_by__in=following_ids)
         page = self.paginate_queryset(pins)
-        serializer = PinSerializerReadOnly(page, many=True)
-
         return Response({
             "msg": "user timeline fetched successfully",
-            "data": self.get_paginated_response(serializer.data).data
+            "data": self.get_paginated_response(page).data
         })

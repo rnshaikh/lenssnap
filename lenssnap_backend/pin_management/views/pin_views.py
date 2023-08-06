@@ -1,3 +1,4 @@
+from django.core.cache import cache
 from django.db.models import Subquery, OuterRef, Prefetch, Count
 from django.shortcuts import get_object_or_404
 
@@ -10,10 +11,15 @@ from rest_framework.parsers import JSONParser, FormParser, MultiPartParser
 from pin_management.models import Pin
 from pin_management.serializers import PinSerializerReadOnly, PinSerializer
 from pin_management.system_error import check_pin_update_error
+from pin_management import utils
 
 from comment_management.models import Comment
 from comment_management.serializers import (PinCommentSerializer, )
 from like_management.serializers import (PinLikeSerializer, )
+
+from lenssnap_backend.cache_utils import Cache
+
+cache_obj = Cache()
 
 
 class PinList(viewsets.ModelViewSet):
@@ -30,23 +36,29 @@ class PinList(viewsets.ModelViewSet):
         if not user:
             user = request.user.id
 
-        pins = Pin.objects.select_related().filter(created_by=user).annotate(likes_count=Count('likes', distinct=True),
-                                                                             comments_count=Count('comments', distinct=True)).order_by('-created_at')
-        page = self.paginate_queryset(pins)
-        serializer = PinSerializerReadOnly(page, many=True)
+        user_cache = cache.get(user, None)
+        if user_cache and user_cache.get('home_timeline'):
+            pins = user_cache.get('home_timeline')
+        else:
+            pins = Pin.objects.select_related().filter(created_by=user).annotate(likes_count=Count('likes', distinct=True),
+                                                                                 comments_count=Count('comments', distinct=True)).order_by('-created_at')
+            pins = PinSerializerReadOnly(pins, many=True)
+            cache_obj.load_user_data(request.user)
 
+        page = self.paginate_queryset(pins)
         return Response({
             "msg": "pin fetched successfully.",
-            "data": self.get_paginated_response(serializer.data).data
+            "data": self.get_paginated_response(page).data
         })
 
     def create(self, request):
 
         data = request.data
-        data['created_by'] = request.user
+        data['created_by'] = request.user.id
         serializer = PinSerializer(data=data)
         if serializer.is_valid():
-            serializer.save()
+            obj = serializer.save()
+            utils.update_cache_after_pin_creation(obj)
             return Response({
                 "msg": "pin created successfully.",
                 "data": serializer.data
@@ -69,6 +81,7 @@ class PinList(viewsets.ModelViewSet):
 
         pin = get_object_or_404(Pin, id=pk)
         data = request.data
+        data._mutable = True
         data['updated_by'] = request.user.id
         errors = check_pin_update_error(data, pin)
         if errors:
@@ -76,7 +89,8 @@ class PinList(viewsets.ModelViewSet):
 
         serializer = PinSerializer(pin, data=data, partial=True)
         if serializer.is_valid():
-            serializer.save()
+            obj = serializer.save()
+            utils.update_cache_after_pin_updation(obj)
             return Response({
                 "msg": "pin updated successfully.",
                 "data": serializer.data
@@ -88,6 +102,7 @@ class PinList(viewsets.ModelViewSet):
 
     def destroy(self, request, pk):
         pin = get_object_or_404(Pin, id=pk)
+        utils.cache_delete_pin(pin)
         pin.delete()
         return Response({
             "msg": "pin deleted successfully."
@@ -96,8 +111,6 @@ class PinList(viewsets.ModelViewSet):
     @action(detail=True, methods=['GET'])
     def comments(self, request, pk):
 
-        import pdb
-        pdb.set_trace()
         pin = get_object_or_404(Pin, id=pk)
         comments = pin.comments.filter(parent=None).select_related().prefetch_related(
                     'replies',

@@ -63,7 +63,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'lenssnap_backend.middleware.log.RequestResponseLogMiddleware'
+    'lenssnap_backend.middleware.log.RequestResponseLogMiddleware',
+    'lenssnap_backend.middleware.cache.CacheLoad'
 ]
 
 ROOT_URLCONF = 'lenssnap_backend.urls'
@@ -260,3 +261,18 @@ SOCIAL_AUTH_PIPELINE = (
     'social_core.pipeline.user.user_details',
     'lenssnap_backend.pipeline.get_avatar',
 )
+
+CACHE_TTL = 60*60*1
+
+CACHES = {
+
+    "default": {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        "LOCATION": "unique-snowflake",
+        "OPTIONS": {
+            "PASSWORD": "",
+            "CLIENT_CLASS": ""
+        }
+    }
+
+}
