@@ -59,8 +59,13 @@ class FollowerList(viewsets.ModelViewSet):
     @action(detail=False, methods=['GET'])
     def following(self, request):
 
+        user = request.user.id
+        user_param = request.query_params.get('user', None)
+        if user_param:
+            user = user_param
+
         followings = Follower.objects.select_related('followed_by',
-                                                     'followed_to').filter(followed_by=request.user).order_by('-created_at')
+                                                     'followed_to').filter(followed_by=user).order_by('-created_at')
         page = self.paginate_queryset(followings)
         serializer = FollowingSerializerReadOnly(page, many=True)
         return Response({
@@ -70,8 +75,13 @@ class FollowerList(viewsets.ModelViewSet):
 
     def list(self, request):
 
+        user = request.user.id
+        user_param = request.query_params.get('user', None)
+        if user_param:
+            user = user_param
+
         followers = Follower.objects.select_related('followed_by',
-                                                    'followed_to').filter(followed_to=request.user).order_by('-created_at')
+                                                    'followed_to').filter(followed_to=user).order_by('-created_at')
         page = self.paginate_queryset(followers)
         serializer = FollowerSerializerReadOnly(page, many=True)
         return Response({
