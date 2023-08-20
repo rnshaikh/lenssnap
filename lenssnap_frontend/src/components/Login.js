@@ -1,5 +1,8 @@
-import React from "react";
+import React, {useEffect} from "react";
 
+import { useNavigate } from 'react-router-dom';
+
+import { gapi } from "gapi-script";
 import { GoogleLogin } from '@leecheuk/react-google-login';
 import { FcGoogle } from "react-icons/fc";
 
@@ -9,10 +12,24 @@ import logo from "../assets/lens_logo.png";
 
 const Login = ()=>{
 
+    const navigate = useNavigate()
+
+    console.log("clientid", process.env.REACT_APP_GOOGLE_CLIENT_ID)
+
+    useEffect(() => {
+      function start() {
+        gapi.client.init({
+          clientId: process.env.REACT_APP_GOOGLE_CLIENT_ID
+        });
+      }
+      gapi.load('client:auth2', start);
+    });
+
     const responseGoogle = (response) => {
+        debugger;
         console.log(response);
     }
-    
+
     return (
         <div className="flex justify-start items-center flex-col h-screen">
           <div className=" relative w-full h-full">
@@ -33,7 +50,7 @@ const Login = ()=>{
     
               <div className="shadow-2xl">
                 <GoogleLogin
-                  clientId=""
+                  clientId={process.env.REACT_APP_GOOGLE_CLIENT_ID}
                   render={(renderProps) => (
                     <button
                       type="button"
