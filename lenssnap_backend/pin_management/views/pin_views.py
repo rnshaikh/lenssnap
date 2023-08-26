@@ -31,7 +31,6 @@ class PinList(viewsets.ModelViewSet):
     model = Pin
 
     def list(self, request):
-
         user = request.query_params.get('user', None)
         if not user:
             user = request.user.id
