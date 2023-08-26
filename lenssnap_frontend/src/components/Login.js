@@ -9,6 +9,10 @@ import { FcGoogle } from "react-icons/fc";
 import shareVideo from '../assets/share.mp4';
 import logo from "../assets/lens_logo.png";
 
+import { getAccessToken, getUserProfile } from "../services/userServices";
+import { setAuthToken } from "../utils/authToken";
+
+
 
 const Login = ()=>{
 
@@ -25,9 +29,20 @@ const Login = ()=>{
       gapi.load('client:auth2', start);
     });
 
-    const responseGoogle = (response) => {
+    const responseGoogle = async(response) => {
         debugger;
         console.log(response);
+        if(response.error){
+          alert("error", response.error);
+          return;
+        }
+        localStorage.setItem('token', response.tokenObj.access_token)
+        const res = await getAccessToken(response.tokenObj.access_token);
+        localStorage.setItem('profile', JSON.stringify(response.profileObj))
+        localStorage.setItem('access_token', res.data.access_token)
+        setAuthToken(res.data.access_token)
+        await getUserProfile()
+        navigate("/");
     }
 
     return (

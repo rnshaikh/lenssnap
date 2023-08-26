@@ -4,7 +4,7 @@ import { Navigate } from "react-router-dom";
 
 const PrivateRoute = ({Component}) =>{
     
-    const token = localStorage.token;
+    const token = localStorage.access_token;
     return token ? <Component/>: <Navigate to="/login"></Navigate>;
 
 }
