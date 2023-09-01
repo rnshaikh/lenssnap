@@ -67,13 +67,16 @@ class UserTimeLineView(viewsets.ModelViewSet):
 
     def list(self, request):
         user = request.user.id
+        cache.clear()
         user_cache = cache.get(user, None)
         if user_cache and user_cache.get('user_timeline'):
             pins = user_cache.get('user_timeline')
         else:
             following_ids = request.user.followers_by.all().values_list('followed_to', flat=True)
-            pins = Pin.objects.filter(created_by__in=following_ids)
+            pins = Pin.objects.select_related().filter(created_by__in=following_ids).annotate(likes_count=Count('likes', distinct=True),
+                                                                                              comments_count=Count('comments', distinct=True)).order_by('-created_at')
             pins = PinSerializerReadOnly(pins, many=True)
+            pins = pins.data
             cache_obj.load_user_data(request.user)
 
         page = self.paginate_queryset(pins)
