@@ -9,7 +9,8 @@ export const getUserPins = async(userId) =>{
         
         debugger;
         const params = {
-            "user": userId
+            "user": userId,
+            "page_size": 10000
         }
 
         const config = {
@@ -28,13 +29,118 @@ export const getUserPins = async(userId) =>{
             localStorage.clear()
         }
         else{
-            let response = {"data": null, "error":res.data};
+            let response = {"data": null, "error":res.response.data.detail};
             return response
         }
 
     }
     catch(error){
-        let response = {"data": null, "error":error.message};
+        let response = {"data": null, "error":error.response.data.detail};
+        return response
+        
+    }
+}
+
+
+
+export const deleteUserPin = async(pinId) =>{
+
+    try{
+        
+        const config = {
+            headers : {
+                "content-type": "application/json",
+            }
+        }
+
+        const res = await axios.delete(`/api/pins/${pinId}/`,config)
+        if(res.status === 200){
+            let response = {"data": res.data.data, "error":null};
+            return response
+        }
+        else if(res.status===401){
+            localStorage.clear()
+        }
+        else{
+            let response = {"data": null, "error":res.response.data.detail};
+            return response
+        }
+
+    }
+    catch(error){
+        let response = {"data": null, "error":error.response.data.detail};
+        return response
+        
+    }
+}
+
+
+
+export const getPinDetail = async(pinId) =>{
+
+    try{
+        
+        const config = {
+            headers : {
+                "content-type": "application/json",
+            }
+        }
+
+        const res = await axios.get(`/api/pins/${pinId}/`,config)
+        if(res.status === 200){
+            let response = {"data": res.data.data, "error":null};
+            return response
+        }
+        else if(res.status===401){
+            localStorage.clear()
+        }
+        else{
+            let response = {"data": null, "error":res.response.data.detail};
+            return response
+        }
+
+    }
+    catch(error){
+        let response = {"data": null, "error":error.response.data.detail};
+        return response
+        
+    }
+}
+
+
+export const getPinComments = async(pinId) =>{
+
+    try{
+        
+        debugger;
+        const params = {
+            "user": pinId,
+            "page_size": 10000
+        }
+
+        const config = {
+            headers : {
+                "content-type": "application/json",
+            },
+            params
+        }
+
+        const res = await axios.get(`/api/pins/${pinId}/comments/`,config)
+        if(res.status === 200){
+            let response = {"data": res.data.data, "error":null};
+            return response
+        }
+        else if(res.status===401){
+            localStorage.clear()
+        }
+        else{
+            let response = {"data": null, "error":res.response.data.detail};
+            return response
+        }
+
+    }
+    catch(error){
+        let response = {"data": null, "error":error.response.data.detail};
         return response
         
     }

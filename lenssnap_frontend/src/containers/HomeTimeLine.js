@@ -32,11 +32,10 @@ const HomeTimeLine = () =>{
             const userHome = await getUserHomeTimeLine(params.id)
             if(userHome.error){
                 
-                alert(userHome.error)
+              window.bus.publish("alert", {"msg":userHome.error, "alertType":"error"});
 
             }
             else{
-                console.log("home timeline", userHome.data)
                 setUser(userHome.data)
             }
         }
@@ -50,13 +49,10 @@ const HomeTimeLine = () =>{
 
             const re = await getUserPins(params.id)
             if(re.error){
-
-                alert(re.error)
-
+              window.bus.publish("alert", {"msg":re.error, "alertType":"error"});
             }
             else
             { 
-                console.log("pins", re.data.results)
                 setPins(re.data.results)
 
             }

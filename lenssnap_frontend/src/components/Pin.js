@@ -1,15 +1,20 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { MdDownloadForOffline } from 'react-icons/md';
+import { BiCommentDetail } from 'react-icons/bi';
 import { AiTwotoneDelete } from 'react-icons/ai';
+import {FcLike} from 'react-icons/fc';
 import { BsFillArrowUpRightCircleFill } from 'react-icons/bs';
 
+import { deleteUserPin } from '../services/pinServices'; 
 
 
 const Pin = ({pin}) =>{
     
     const [postHovered, setPostHovered] = useState(false);
     const [savingPost, setSavingPost] = useState(false);
+
+    const navigate = useNavigate();
 
     const user = localStorage.getItem('user') !== 'undefined' ? JSON.parse(localStorage.getItem('user')) : localStorage.clear();
     let alreadySaved = pin?.save?.filter((item) => item?.created_by?.id === user?.id);
@@ -19,10 +24,18 @@ const Pin = ({pin}) =>{
         console.log("save id", id);
     }
 
-    const deletePin = (id) =>{
+    const deletePin = async (id) =>{
+      
+        let resp = await deleteUserPin(id)
 
-        console.log("delete", id);
-
+        if(resp.error){
+          window.bus.publish("alert", {"msg":resp.error, "alertType":"error"});
+        }
+        else{
+            let alertObj = {"msg": "pin delete successfully", "alertType": "success"}
+            window.bus.publish("alert", alertObj);
+            window.location.reload();
+        }
     }
 
     return (
@@ -30,7 +43,7 @@ const Pin = ({pin}) =>{
           <div
             onMouseEnter={() => setPostHovered(true)}
             onMouseLeave={() => setPostHovered(false)}
-            // onClick={() => navigate(`/pin-detail/${_id}`)}
+            onClick={() => navigate(`/pin-detail/${pin.id}`)}
             className="relative w-auto overflow-hidden transition-all duration-500 ease-in-out rounded-lg cursor-zoom-in hover:shadow-lg"
           >
               {pin.file && (
@@ -71,18 +84,18 @@ const Pin = ({pin}) =>{
                   )}
                 </div>
                 <div className="flex items-center justify-between w-full gap-2 ">
-                  {pin.destination?.slice(8).length > 0 ? (
-                    <a
-                      href={pin.destination}
-                      target="_blank"
-                      className="flex items-center gap-2 p-2 pl-4 pr-4 font-bold text-black bg-white rounded-full opacity-70 hover:opacity-100 hover:shadow-md"
-                      rel="noreferrer"
+                 <button
+                    className="flex items-center justify-center p-2 bg-white rounded-full outline-none opacity-75 w-15 h-15 text-dark hover:opacity-100"
                     >
-                      {' '}
-                      <BsFillArrowUpRightCircleFill />
-                      {pin.destination?.slice(8, 17)}...
-                    </a>
-                  ) : undefined}
+                    <FcLike/>
+                    <p>{pin.likes_count}</p>
+                  </button>
+                  <button
+                    className="flex items-center justify-center p-2 bg-white rounded-full outline-none opacity-75 w-15 h-15 text-dark hover:opacity-100"
+                    >    
+                    <BiCommentDetail />
+                    <p>{pin.comments_count}</p>
+                    </button>
                   {
                     pin.created_by?.id === user.id && (
                     <button
@@ -91,7 +104,7 @@ const Pin = ({pin}) =>{
                         e.stopPropagation();
                         deletePin(pin.id);
                         }}
-                        className="flex items-center justify-center w-8 h-8 p-2 bg-white rounded-full outline-none opacity-75 text-dark hover:opacity-100"
+                        className="flex items-center justify-center p-2 bg-white rounded-full outline-none opacity-75 w-15 h-15 text-dark hover:opacity-100"
                     >
                     <AiTwotoneDelete />
                     </button>
@@ -113,6 +126,7 @@ const Pin = ({pin}) =>{
                 </Link>
             )
           }
+           <p className="flex-wrap text-sm font-thin hover:italic ">{pin.description}</p>
         </div>
       );
 
