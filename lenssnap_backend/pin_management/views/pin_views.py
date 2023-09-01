@@ -42,6 +42,7 @@ class PinList(viewsets.ModelViewSet):
             pins = Pin.objects.select_related().filter(created_by=user).annotate(likes_count=Count('likes', distinct=True),
                                                                                  comments_count=Count('comments', distinct=True)).order_by('-created_at')
             pins = PinSerializerReadOnly(pins, many=True)
+            pins = pins.data
             cache_obj.load_user_data(request.user)
 
         page = self.paginate_queryset(pins)
@@ -51,7 +52,6 @@ class PinList(viewsets.ModelViewSet):
         })
 
     def create(self, request):
-
         data = request.data
         data['created_by'] = request.user.id
         serializer = PinSerializer(data=data)
@@ -69,12 +69,18 @@ class PinList(viewsets.ModelViewSet):
 
     def retrieve(self, request, pk):
 
-        pin = get_object_or_404(Pin, id=pk)
-        serializer = PinSerializerReadOnly(pin)
-        return Response({
-            "msg": "pin retrieved successfully.",
-            "data": serializer.data
-        })
+        pins = Pin.objects.select_related().filter(id=pk).annotate(likes_count=Count('likes', distinct=True),
+                                                                   comments_count=Count('comments', distinct=True))
+        if pins:
+            serializer = PinSerializerReadOnly(pins[0])
+            return Response({
+                "msg": "pin retrieved successfully.",
+                "data": serializer.data
+            })
+        else:
+            return Response({
+                "msg": "Not Found.",
+            }, status=status.HTTP_404_NOT_FOUND)
 
     def partial_update(self, request, pk):
 

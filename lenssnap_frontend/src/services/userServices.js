@@ -27,13 +27,13 @@ export const getAccessToken= async(token)=>{
 
         }
         else{
-            let response = {"data": null, "error":res};
+            let response = {"data": null, "error":res.response.data.detail};
             return response
         }
 
     }
     catch(error){
-        let response = {"data": null, "error":error};
+        let response = {"data": null, "error":error.response.data.detail};
         return response
     }
 };
@@ -87,15 +87,52 @@ export const getUserHomeTimeLine = async(userId) =>{
             localStorage.clear()
         }
         else{
-            let response = {"data": null, "error":res.data};
+            let response = {"data": null, "error":res.response.data.detail};
             return response
         }
 
     }
     catch(error){
-        let response = {"data": null, "error":error.message};
+        let response = {"data": null, "error":error.response.data.detail};
         return response
         
     }
 }
 
+export const getUserTimeLine = async(userId)=>{
+
+    try{
+        
+        debugger;
+        
+        const params = {
+            "user": userId,
+            "page_size":10000
+        }
+
+        const config = {
+            headers : {
+                "content-type": "application/json",
+            },
+            params
+        }
+
+        const res = await axios.get(`/api/usertimelines/`,config)
+        if(res.status === 200){
+            let response = {"data": res.data.data, "error":null};
+            return response
+        }
+        else if(res.status===401){
+            localStorage.clear()
+        }
+        else{
+            let response = {"data": null, "error":res.response.data.detail};
+            return response
+        }
+
+    }
+    catch(error){
+        let response = {"data": null, "error":error.response.data.detail};
+        return response   
+    }
+}

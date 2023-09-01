@@ -1,9 +1,10 @@
-import React from "react";
+import React, { Fragment } from "react";
 import axios from "axios";
 import {Routes, Route} from "react-router-dom";
 import PrivateRoute from "./components/PrivateRoute";
 
 import Login from "./components/Login";
+import Alert from './components/Alert';
 
 import Home from './containers/Home';
 import { setAuthToken } from "./utils/authToken";
@@ -16,10 +17,13 @@ function App() {
   access_token ?  setAuthToken(access_token) : localStorage.clear()
 
   return (
-    <Routes>
-      <Route path="/*" element={<PrivateRoute Component={Home}/>}></Route>
-      <Route path="/login" element={<Login/>}></Route>
-    </Routes>
+    <Fragment>  
+      <Alert></Alert>
+      <Routes>
+        <Route path="/*" element={<PrivateRoute Component={Home}/>}></Route>
+        <Route path="/login" element={<Login/>}></Route>
+      </Routes>
+    </Fragment>
   );
 }
 
