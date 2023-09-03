@@ -119,7 +119,7 @@ const Pin = ({pin}) =>{
                 <Link to={`/user/hometimeline/${pin.created_by?.id}`} className="flex items-center gap-2 mt-2">
                 <img
                 className="object-cover w-8 h-8 rounded-full"
-                src={process.env.REACT_APP_BACKEND_URL+pin.created_by?.file}
+                src={pin.created_by?.picture}
                 alt="user-profile"
                 />
                 <p className="font-semibold capitalize">{pin.created_by?.first_name + " "+ pin.created_by?.last_name }</p>
