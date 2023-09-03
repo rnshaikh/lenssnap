@@ -151,11 +151,11 @@ const PinDetail = ({user}) =>{
               More like this
             </h2>
           )}
-          {pins ? (
+          {/* {pins ? (
             <MasonryLayout pins={pins} />
           ) : (
             <Spinner message="Loading more pins" />
-          )}
+          )} */}
         </>
       );
 

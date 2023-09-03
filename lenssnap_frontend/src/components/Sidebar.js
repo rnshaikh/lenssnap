@@ -46,7 +46,7 @@ const Sidebar = ({closeToggle, user})=>{
                 className="flex items-center gap-2 p-2 mx-3 my-5 mb-3 bg-white rounded-lg shadow-lg"
                 onClick={handleCloseSidebar}
                 >
-                <img src={user.image} className="w-10 h-10 rounded-full" alt="user-profile" />
+                <img src={user.picture} className="w-10 h-10 rounded-full" alt="user-profile" />
                 <p>{user.userName}</p>
                 <IoIosArrowForward />
                 </Link>

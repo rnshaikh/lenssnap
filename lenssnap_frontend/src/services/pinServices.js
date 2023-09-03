@@ -145,3 +145,38 @@ export const getPinComments = async(pinId) =>{
         
     }
 }
+
+
+export const saveUserPin = async (data)=>{
+
+    try{
+
+        const config = {
+            headers : {
+                "content-type": "multipart/form-data",
+            }
+        }
+    
+        const res = await axios.post(`/api/pins/`, data, config)
+    
+        if(res.status === 200){
+            let response = {"data": res.data.data, "error":null};
+            return response
+        }
+        else if(res.status===401){
+            localStorage.clear()
+        }
+        else{
+            let response = {"data": null, "error":res.response.data.detail};
+            return response
+        }
+
+
+    }
+    catch(error){
+
+        let response = {"data": null, "error":error.response.data.detail};
+        return response
+
+    }
+}

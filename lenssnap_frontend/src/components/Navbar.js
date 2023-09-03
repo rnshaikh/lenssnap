@@ -3,11 +3,11 @@ import { Link, useNavigate } from 'react-router-dom';
 import { IoMdAdd, IoMdSearch } from 'react-icons/io';
 
 
-const Navbar = () =>{
+const Navbar = ({searchTerm, setSearchTerm, user}) =>{
 
     return (
-        <div className="flex gap-2 md:gap-5 w-full mt-5 pb-7 ">
-          <div className="flex justify-start items-center w-full px-2 rounded-md bg-white border-none outline-none focus-within:shadow-sm">
+        <div className="flex w-full gap-2 mt-5 md:gap-5 pb-7 ">
+          <div className="flex items-center justify-start w-full px-2 bg-white border-none rounded-md outline-none focus-within:shadow-sm">
             <IoMdSearch fontSize={21} className="ml-1" />
             <input
               type="text"
@@ -15,14 +15,14 @@ const Navbar = () =>{
               placeholder="Search"
               //value={searchTerm}
               //onFocus={() => navigate('/search')}
-              className="p-2 w-full bg-white outline-none"
+              className="w-full p-2 bg-white outline-none"
             />
           </div>
           <div className="flex gap-3 ">
             <Link to="/add" className="hidden md:block">
-              <img src="" alt="user-pic" className="w-14 h-12 rounded-lg " />
+              <img src={user?.picture} alt="user-pic" className="h-12 rounded-lg w-14 " />
             </Link>
-            <Link to="/create-pin" className="bg-black text-white rounded-lg w-12 h-12 md:w-14 md:h-12 flex justify-center items-center">
+            <Link to="/create-pin" className="flex items-center justify-center w-12 h-12 text-white bg-black rounded-lg md:w-14 md:h-12">
               <IoMdAdd />
             </Link>
           </div>
