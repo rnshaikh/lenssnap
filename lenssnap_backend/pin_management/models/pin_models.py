@@ -16,8 +16,8 @@ class Pin(CreatedInfo, UpdatedInfo):
     file = models.FileField(upload_to=user_directory_path)
     description = models.CharField(max_length=256, blank=True, null=True)
 
-    comments = GenericRelation(Comment)
-    likes = GenericRelation(Like)
+    comments = GenericRelation(Comment, related_query_name="pin_comments")
+    likes = GenericRelation(Like, related_query_name="pin_likes")
 
     class Meta:
         ordering = ('-created_at', )

@@ -17,6 +17,8 @@ from comment_management.system_error import (comment_creation_error_check,
 from pin_management.models import Pin
 from lenssnap_backend import error_conf
 
+from lenssnap_backend.cache_utils import Cache
+
 
 class CommentViewset(viewsets.ModelViewSet):
 
@@ -30,7 +32,7 @@ class CommentViewset(viewsets.ModelViewSet):
         return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
     def create(self, request):
-
+        cache_obj = Cache()
         data = request.data
         data['created_by'] = request.user.id
         content_type = self.content_type_map.get(data.get('content_type'))
@@ -45,6 +47,7 @@ class CommentViewset(viewsets.ModelViewSet):
 
         if serializer.is_valid():
             serializer.save()
+            cache_obj.load_users_data()
             return Response({
                 "msg": "comment created successfully.",
                 "data": serializer.data
@@ -75,13 +78,14 @@ class CommentViewset(viewsets.ModelViewSet):
                         status=status.HTTP_400_BAD_REQUEST)
 
     def destroy(self, request, pk):
-
+        cache_obj = Cache()
         comment = get_object_or_404(Comment, id=pk)
 
         if comment.created_by != request.user:
             return error_conf.CANT_UPDATE
 
         comment.delete()
+        cache_obj.load_users_data()
         return Response({
             "msg": "comment deleted successfully.",
         })

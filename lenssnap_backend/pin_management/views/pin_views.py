@@ -1,5 +1,5 @@
 from django.core.cache import cache
-from django.db.models import Subquery, OuterRef, Prefetch, Count
+from django.db.models import Prefetch, Count, Q
 from django.shortcuts import get_object_or_404
 
 from rest_framework.decorators import action
@@ -39,8 +39,13 @@ class PinList(viewsets.ModelViewSet):
         if user_cache and user_cache.get('home_timeline'):
             pins = user_cache.get('home_timeline')
         else:
-            pins = Pin.objects.select_related().filter(created_by=user).annotate(likes_count=Count('likes', distinct=True),
-                                                                                 comments_count=Count('comments', distinct=True)).order_by('-created_at')
+            pins = Pin.objects.select_related().filter(
+                    created_by=user
+                    ).annotate(
+                    likes_count=Count('likes', distinct=True),
+                    comments_count=Count('comments', distinct=True),
+                    is_liked=Count('likes', filter=Q(likes__like_by=user), distinct=True)
+                    ).order_by('-created_at')
             pins = PinSerializerReadOnly(pins, many=True)
             pins = pins.data
             cache_obj.load_user_data(request.user)

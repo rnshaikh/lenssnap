@@ -11,6 +11,8 @@ from like_management.system_error import check_like_creation_error
 from comment_management.models import Comment
 from pin_management.models import Pin
 
+from lenssnap_backend.cache_utils import Cache
+
 
 class LikeList(viewsets.ModelViewSet):
 
@@ -22,6 +24,7 @@ class LikeList(viewsets.ModelViewSet):
 
     def create(self, request):
 
+        cache_obj = Cache()
         data = request.data
         data['like_by'] = request.user.id
         error = check_like_creation_error(data)
@@ -34,6 +37,7 @@ class LikeList(viewsets.ModelViewSet):
         try:
             like_obj = obj.likes.get(like_by=request.user)
             like_obj.delete()
+            cache_obj.load_users_data()
             return Response({
                 "msg": "likes delete successfully"
             })
@@ -44,6 +48,7 @@ class LikeList(viewsets.ModelViewSet):
         serializer = LikeSerializer(data=data)
         if serializer.is_valid():
             serializer.save()
+            cache_obj.load_users_data()
             return Response({
                 "msg": "Liked successfully",
                 "data": serializer.data
