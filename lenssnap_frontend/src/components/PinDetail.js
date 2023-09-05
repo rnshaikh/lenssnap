@@ -75,7 +75,7 @@ const PinDetail = ({user}) =>{
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <a
-                      href={`${pinDetail.file}?dl=`}
+                      href={`${process.env.REACT_APP_BACKEND_URL+pinDetail.file}?dl=`}
                       download
                       className="flex items-center justify-center p-2 text-xl rounded-full opacity-75 bg-secondaryColor text-dark hover:opacity-100"
                     >

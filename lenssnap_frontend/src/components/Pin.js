@@ -84,18 +84,6 @@ const Pin = ({pin}) =>{
                   )}
                 </div>
                 <div className="flex items-center justify-between w-full gap-2 ">
-                 <button
-                    className="flex items-center justify-center p-2 bg-white rounded-full outline-none opacity-75 w-15 h-15 text-dark hover:opacity-100"
-                    >
-                    <FcLike/>
-                    <p>{pin.likes_count}</p>
-                  </button>
-                  <button
-                    className="flex items-center justify-center p-2 bg-white rounded-full outline-none opacity-75 w-15 h-15 text-dark hover:opacity-100"
-                    >    
-                    <BiCommentDetail />
-                    <p>{pin.comments_count}</p>
-                    </button>
                   {
                     pin.created_by?.id === user.id && (
                     <button
@@ -113,6 +101,20 @@ const Pin = ({pin}) =>{
                 </div>
               </div>
             )}
+          </div>
+          <div className="flex items-center space-x-4">
+            <button
+              className="flex items-center justify-center p-2 bg-white rounded-full outline-none opacity-75 w-30 h-30 text-dark hover:opacity-100"
+            >
+              <FcLike/>
+              <p>{pin.likes_count}</p>
+            </button>
+            <button
+                className="flex items-center justify-center p-2 bg-white rounded-full outline-none opacity-75 w-30 h-30 text-dark hover:opacity-100"
+              >    
+              <BiCommentDetail />
+              <p>{pin.comments_count}</p>
+            </button>
           </div>
           {
             pin.created_by.id !== user.id && (
