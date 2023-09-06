@@ -3,12 +3,13 @@ import { useParams, Link } from "react-router-dom";
 
 import { BiCommentDetail } from 'react-icons/bi';
 import {FcLike} from 'react-icons/fc';
+import {BsFillHeartFill} from 'react-icons/bs';
 import { MdDownloadForOffline } from 'react-icons/md';
 
 import Spinner from "./Spinner";
 import MasonryLayout from "./MasonryLayout";
 
-import { getPinDetail, getPinComments } from "./../services/pinServices";
+import { getPinDetail, getPinComments, likeUserPin } from "./../services/pinServices";
 
 
 const PinDetail = ({user}) =>{
@@ -18,13 +19,14 @@ const PinDetail = ({user}) =>{
     const [replies, setReplies] = useState();
     const [pins, setPins] = useState();
     const [comment, setComment] = useState('');
+    const [likeChange, setLikeChange] = useState(false);
     const [addingComment, setAddingComment] = useState(false);
 
 
     useEffect(() => {
 
         async function fetchPinDetail(){
-
+            debugger;
             const resp = await getPinDetail(params.id)
             console.log("Pin Detail", resp);
             if(resp.error){
@@ -44,7 +46,7 @@ const PinDetail = ({user}) =>{
             }
         }
         fetchPinDetail()
-    }, [])
+    }, [params.id, likeChange])
 
     console.log("respolies", replies)
     const addComment = () => {
@@ -53,6 +55,17 @@ const PinDetail = ({user}) =>{
         }
       };
     
+    const likePin = async(id) =>{
+        debugger;
+        let resp = await likeUserPin(id);
+        if(resp.error){
+          window.bus.publish("alert", {"msg":resp.error, "alertType":"error"});
+        }
+        else{
+          setLikeChange(likeChange?false:true)
+        }
+      }
+
     if (!pinDetail) {
         return (
             <Spinner message="Showing pin" />
@@ -84,8 +97,12 @@ const PinDetail = ({user}) =>{
                   </div>
                   <button
                     className="flex items-center justify-center p-2 bg-white rounded-full outline-none opacity-75 w-15 h-15 text-dark hover:opacity-100"
+                    onClick={(e)=>{e.stopPropagation(); likePin(pinDetail.id)}}
                     >
-                    <FcLike/>
+                      {
+                          pinDetail.is_liked ? <FcLike/>: <BsFillHeartFill/>
+
+                      }
                     <p>{pinDetail.likes_count}</p>
                   </button>
                   <button

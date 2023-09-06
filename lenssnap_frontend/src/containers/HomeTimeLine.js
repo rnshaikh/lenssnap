@@ -21,10 +21,12 @@ const HomeTimeLine = () =>{
     const [user, setUser] = useState();
     const [pins, setPins] = useState([]);
     const [text, setText] = useState('Created');
+    const [likeChange, setLikeChange] = useState(false);
     const [activeBtn, setActiveBtn] = useState('created');
     const params = useParams();
     
-
+    console.log("rendering hometimeline")
+    
     useEffect(() => {
         debugger;
         async function fetchUserHomeTimeLine(){
@@ -60,7 +62,7 @@ const HomeTimeLine = () =>{
 
         fetchPins()
     
-    }, [params.id])
+    }, [params.id, likeChange])
     
     const logout = ()=>{
 
@@ -132,7 +134,7 @@ const HomeTimeLine = () =>{
         </div>
         {pins?.length > 0 ?
             <div className="px-2">
-                <MasonryLayout pins={pins} />
+                <MasonryLayout pins={pins} likeChange={likeChange} setLikeChange={setLikeChange}/>
             </div>
         :
             <div className="flex items-center justify-center w-full mt-2 font-bold text-1xl">

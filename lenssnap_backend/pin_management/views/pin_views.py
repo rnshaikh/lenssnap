@@ -75,7 +75,8 @@ class PinList(viewsets.ModelViewSet):
     def retrieve(self, request, pk):
 
         pins = Pin.objects.select_related().filter(id=pk).annotate(likes_count=Count('likes', distinct=True),
-                                                                   comments_count=Count('comments', distinct=True))
+                                                                   comments_count=Count('comments', distinct=True),
+                                                                   is_liked=Count('likes', filter=Q(likes__like_by=request.user), distinct=True))
         if pins:
             serializer = PinSerializerReadOnly(pins[0])
             return Response({

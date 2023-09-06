@@ -9,8 +9,11 @@ const Feed = ()=>{
 
     const [pins, setPins] = useState()
     const [loading, setLoading] = useState(false);
+    const [likeChange, setLikeChange] = useState(false);
 
     const user = localStorage.user? JSON.parse(localStorage.user) : null; 
+
+    console.log("feed rendering", pins)
 
 
     useEffect(() => {
@@ -28,7 +31,7 @@ const Feed = ()=>{
         }
         fetchUserTimeline()
   
-      }, []);
+      }, [likeChange]);
 
     return (
         !loading ? 
@@ -36,7 +39,7 @@ const Feed = ()=>{
             :
             <div>
                 {pins && (
-                    <MasonryLayout pins={pins} />
+                    <MasonryLayout pins={pins} likeChange={likeChange} setLikeChange={setLikeChange}/>
                 )}
             </div>
     );
