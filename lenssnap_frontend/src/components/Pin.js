@@ -126,6 +126,7 @@ const Pin = ({pin, likeChange, setLikeChange}) =>{
             </button>
             <button
                 className="flex items-center justify-center p-2 bg-white rounded-full outline-none opacity-75 w-30 h-30 text-dark hover:opacity-100"
+                onClick={() => navigate(`/pin-detail/${pin.id}`)}
               >    
               <BiCommentDetail />
               <p>{pin.comments_count}</p>

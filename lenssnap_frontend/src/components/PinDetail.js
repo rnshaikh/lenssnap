@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from "react";
+import React, {useState, useEffect, Fragment} from "react";
 import { useParams, Link } from "react-router-dom";
 
 import { BiCommentDetail } from 'react-icons/bi';
@@ -9,7 +9,7 @@ import { MdDownloadForOffline } from 'react-icons/md';
 import Spinner from "./Spinner";
 import MasonryLayout from "./MasonryLayout";
 
-import { getPinDetail, getPinComments, likeUserPin } from "./../services/pinServices";
+import { getPinDetail, getPinComments, likeUserPin, CommentUserPin } from "./../services/pinServices";
 
 
 const PinDetail = ({user}) =>{
@@ -17,7 +17,6 @@ const PinDetail = ({user}) =>{
     const params = useParams()
     const [pinDetail, setPinDetail] = useState();
     const [replies, setReplies] = useState();
-    const [pins, setPins] = useState();
     const [comment, setComment] = useState('');
     const [likeChange, setLikeChange] = useState(false);
     const [addingComment, setAddingComment] = useState(false);
@@ -46,12 +45,27 @@ const PinDetail = ({user}) =>{
             }
         }
         fetchPinDetail()
-    }, [params.id, likeChange])
+    }, [params.id, likeChange, addingComment])
 
     console.log("respolies", replies)
-    const addComment = () => {
+    const addComment = async(parent=null) => {
         if (comment) {
-          //setAddingComment(true);
+          debugger;
+          setAddingComment(true);
+          let data = {
+            "content": comment,
+            "pinId": params.id,
+            "parent": parent
+          }
+          let resp = await CommentUserPin(data);
+          if(resp.error){
+            window.bus.publish("alert", {"msg":resp.error, "alertType":"error"});
+            setComment("")
+          }
+          else{
+            setAddingComment(false);
+            setComment("")
+          }
         }
       };
     
@@ -126,9 +140,10 @@ const PinDetail = ({user}) =>{
                   <p className="font-bold">{pinDetail.created_by?.first_name + " "+ pinDetail.created_by?.last_name }</p>
                 </Link>
                 <h2 className="mt-5 text-2xl">Comments</h2>
-                <div className="overflow-y-auto max-h-370">
-                  {replies?.map((item) => (
-                    <div className="flex items-center gap-2 mt-5 bg-white rounded-lg" key={item.id}>
+                <div className="overflow-y-auto max-h-200">
+                  {replies?.map((item) => {
+                    return <Fragment>
+                      <div className="flex items-center gap-2 mt-5 bg-white rounded-lg" key={item.id}>
                       <img
                         src={item.created_by?.picture}
                         className="w-10 h-10 rounded-full cursor-pointer"
@@ -137,9 +152,33 @@ const PinDetail = ({user}) =>{
                       <div className="flex flex-col">
                         <p className="font-bold">{item.created_by?.first_name + " "+ item.created_by?.last_name}</p>
                         <p>{item.content}</p>
+                        <button
+                        type="button"
+                        onClick={(e) => {
+                        e.stopPropagation();
+                        }}
+                        className="flex bg-white rounded-full outline-none opacity-75 w-15 h-15 text-dark hover:opacity-100"
+                        >
+                        reply
+                        </button>
                       </div>
                     </div>
-                  ))}
+                    { item?.replies?.map((child)=>(
+                        <div className="flex items-center gap-2 mx-20 mt-5 bg-white rounded-lg" key={child.id}>
+                              <img
+                              src={child.created_by?.picture}
+                              className="w-10 h-10 rounded-full cursor-pointer"
+                              alt="user-profile"
+                              />
+                            <div className="flex flex-col">
+                              <p className="font-bold">{child.created_by?.first_name + " "+ child.created_by?.last_name}</p>
+                              <p>{child.content}</p>
+                            </div>
+                        </div>
+                      ))
+                    }
+                    </Fragment>
+                  })}
                 </div>
                 <div className="flex flex-wrap gap-3 mt-6">
                   <Link to={`/user-profile/${user.id}`}>
@@ -163,16 +202,6 @@ const PinDetail = ({user}) =>{
               </div>
             </div>
           )}
-          {pins?.length > 0 && (
-            <h2 className="mt-8 mb-4 text-2xl font-bold text-center">
-              More like this
-            </h2>
-          )}
-          {/* {pins ? (
-            <MasonryLayout pins={pins} />
-          ) : (
-            <Spinner message="Loading more pins" />
-          )} */}
         </>
       );
 
