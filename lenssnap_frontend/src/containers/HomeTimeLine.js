@@ -11,7 +11,7 @@ import MasonryLayout from "../components/MasonryLayout";
 import { getUserHomeTimeLine } from "../services/userServices";
 import { getUserPins } from "../services/pinServices";
 
-const activeBtnStyles = 'bg-red-500 text-white font-bold p-2 rounded-full w-20 outline-none';
+const activeBtnStyles = 'bg-red-500 text-white font-bold p-2 rounded-full w-60 outline-none';
 const notActiveBtnStyles = 'bg-primary mr-4 text-black font-bold p-2 rounded-full w-20 outline-none';
 
 
@@ -21,10 +21,12 @@ const HomeTimeLine = () =>{
     const [user, setUser] = useState();
     const [pins, setPins] = useState([]);
     const [text, setText] = useState('Created');
+    const [likeChange, setLikeChange] = useState(false);
     const [activeBtn, setActiveBtn] = useState('created');
     const params = useParams();
     
-
+    console.log("rendering hometimeline")
+    
     useEffect(() => {
         debugger;
         async function fetchUserHomeTimeLine(){
@@ -60,7 +62,7 @@ const HomeTimeLine = () =>{
 
         fetchPins()
     
-    }, [params.id])
+    }, [params.id, likeChange])
     
     const logout = ()=>{
 
@@ -89,6 +91,10 @@ const HomeTimeLine = () =>{
           </div>
           <h1 className="mt-3 text-3xl font-bold text-center">
             {user.first_name +" "+ user.last_name}
+            <div>
+              {user.bio}
+            </div>
+
           </h1>
           <div className="absolute top-0 right-0 p-2 z-1">
               <GoogleLogout
@@ -108,16 +114,26 @@ const HomeTimeLine = () =>{
               />
           </div>
         </div>
-        <div className="text-center mb-7">
+        <div className="space-x-1 text-center mb-7">
           <button
             type="button"
             onClick={(e) => {
               setText(e.target.textContent);
-              setActiveBtn('created');
             }}
-            className={`${activeBtn === 'created' ? activeBtnStyles : notActiveBtnStyles}`}
+            className={activeBtnStyles}
           >
-            Created
+            {user.pins_count}
+            <div>Pins</div>
+          </button>
+          <button
+            type="button"
+            onClick={(e) => {
+              setText(e.target.textContent);
+            }}
+            className={activeBtnStyles}
+          >
+            {user.followers_count}
+            <div>Followers</div>
           </button>
           <button
             type="button"
@@ -125,14 +141,15 @@ const HomeTimeLine = () =>{
               setText(e.target.textContent);
               setActiveBtn('saved');
             }}
-            className={`${activeBtn === 'saved' ? activeBtnStyles : notActiveBtnStyles}`}
+            className={activeBtnStyles}
           >
-            Saved
+            {user.following_count}
+            <div>Following</div>
           </button>
         </div>
         {pins?.length > 0 ?
             <div className="px-2">
-                <MasonryLayout pins={pins} />
+                <MasonryLayout pins={pins} likeChange={likeChange} setLikeChange={setLikeChange}/>
             </div>
         :
             <div className="flex items-center justify-center w-full mt-2 font-bold text-1xl">

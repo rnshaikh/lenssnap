@@ -1,5 +1,5 @@
 
-from django.db.models import Count
+from django.db.models import Count, Q
 from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
 from rest_framework import viewsets, status
@@ -17,6 +17,8 @@ from comment_management.system_error import (comment_creation_error_check,
 from pin_management.models import Pin
 from lenssnap_backend import error_conf
 
+from lenssnap_backend.cache_utils import Cache
+
 
 class CommentViewset(viewsets.ModelViewSet):
 
@@ -30,7 +32,7 @@ class CommentViewset(viewsets.ModelViewSet):
         return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
     def create(self, request):
-
+        cache_obj = Cache()
         data = request.data
         data['created_by'] = request.user.id
         content_type = self.content_type_map.get(data.get('content_type'))
@@ -45,6 +47,7 @@ class CommentViewset(viewsets.ModelViewSet):
 
         if serializer.is_valid():
             serializer.save()
+            cache_obj.load_users_data()
             return Response({
                 "msg": "comment created successfully.",
                 "data": serializer.data
@@ -75,13 +78,14 @@ class CommentViewset(viewsets.ModelViewSet):
                         status=status.HTTP_400_BAD_REQUEST)
 
     def destroy(self, request, pk):
-
+        cache_obj = Cache()
         comment = get_object_or_404(Comment, id=pk)
 
         if comment.created_by != request.user:
             return error_conf.CANT_UPDATE
 
         comment.delete()
+        cache_obj.load_users_data()
         return Response({
             "msg": "comment deleted successfully.",
         })
@@ -90,7 +94,9 @@ class CommentViewset(viewsets.ModelViewSet):
     def replies(self, request, pk):
 
         comment = get_object_or_404(Comment, id=pk)
-        replies = comment.replies.filter().annotate(likes_count=Count('likes', distinct=True)).order_by('-created_at')
+        replies = comment.replies.filter().annotate(likes_count=Count('likes', distinct=True),
+                                                    is_liked=Count('likes', filter=Q(likes__like_by=request.user),
+                                                                   distinct=True)).order_by('-created_at')
         page = self.paginate_queryset(replies)
         serializer = PinCommentSerializer(page, many=True)
         return Response({

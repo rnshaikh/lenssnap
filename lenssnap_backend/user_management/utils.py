@@ -1,4 +1,4 @@
-from django.db.models import Count
+from django.db.models import Count, Q
 
 from user_management.models import User
 from pin_management.models import Pin
@@ -25,8 +25,13 @@ def get_followers_ids(user_id):
 
 def get_home_timeline(user_id):
 
-    pins = Pin.objects.select_related().filter(created_by=user_id).annotate(likes_count=Count('likes', distinct=True),
-                                                                            comments_count=Count('comments', distinct=True)).order_by('-created_at')
+    pins = Pin.objects.select_related().filter(
+                created_by=user_id
+            ).annotate(
+            likes_count=Count('likes', distinct=True),
+            comments_count=Count('comments', distinct=True),
+            is_liked=Count('likes', filter=Q(likes__like_by=user_id), distinct=True)
+            ).order_by('-created_at')
     serializer = PinSerializerReadOnly(pins, many=True)
     return serializer.data
 
@@ -38,6 +43,12 @@ def get_user_timeline(user_id):
         return []
     user = user[0]
     following_ids = user.followers_by.all().values_list('followed_to', flat=True)
-    pins = Pin.objects.filter(created_by__in=following_ids)
+    pins = Pin.objects.filter(
+                created_by__in=following_ids
+            ).annotate(
+                likes_count=Count('likes', distinct=True),
+                comments_count=Count('comments', distinct=True),
+                is_liked=Count('likes', filter=Q(likes__like_by=user_id), distinct=True)
+            ).order_by('-created_at')
     serializer = PinSerializerReadOnly(pins, many=True)
     return serializer.data

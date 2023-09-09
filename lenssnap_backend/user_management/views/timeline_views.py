@@ -1,6 +1,6 @@
 
 from django.core.cache import cache
-from django.db.models import Count
+from django.db.models import Count, Q
 
 from rest_framework.response import Response
 from rest_framework import viewsets, status
@@ -73,8 +73,13 @@ class UserTimeLineView(viewsets.ModelViewSet):
             pins = user_cache.get('user_timeline')
         else:
             following_ids = request.user.followers_by.all().values_list('followed_to', flat=True)
-            pins = Pin.objects.select_related().filter(created_by__in=following_ids).annotate(likes_count=Count('likes', distinct=True),
-                                                                                              comments_count=Count('comments', distinct=True)).order_by('-created_at')
+            pins = Pin.objects.select_related().filter(
+                    created_by__in=following_ids
+                    ).annotate(
+                    likes_count=Count('likes', distinct=True),
+                    comments_count=Count('comments', distinct=True),
+                    is_liked=Count('likes', filter=Q(likes__like_by=user), distinct=True)
+                    ).order_by('-created_at')
             pins = PinSerializerReadOnly(pins, many=True)
             pins = pins.data
             cache_obj.load_user_data(request.user)

@@ -4,12 +4,12 @@ import { MdDownloadForOffline } from 'react-icons/md';
 import { BiCommentDetail } from 'react-icons/bi';
 import { AiTwotoneDelete } from 'react-icons/ai';
 import {FcLike} from 'react-icons/fc';
-import { BsFillArrowUpRightCircleFill } from 'react-icons/bs';
+import {BsFillHeartFill} from 'react-icons/bs';
 
-import { deleteUserPin } from '../services/pinServices'; 
+import { deleteUserPin, likeUserPin } from '../services/pinServices'; 
 
 
-const Pin = ({pin}) =>{
+const Pin = ({pin, likeChange, setLikeChange}) =>{
     
     const [postHovered, setPostHovered] = useState(false);
     const [savingPost, setSavingPost] = useState(false);
@@ -22,6 +22,18 @@ const Pin = ({pin}) =>{
 
     const savePin = (id) =>{
         console.log("save id", id);
+    }
+
+    const likePin = async(id) =>{
+
+      let resp = await likeUserPin(id);
+      if(resp.error){
+        window.bus.publish("alert", {"msg":resp.error, "alertType":"error"});
+      }
+      else{
+        setLikeChange(likeChange?false:true)
+      }
+      
     }
 
     const deletePin = async (id) =>{
@@ -65,7 +77,7 @@ const Pin = ({pin}) =>{
                     ><MdDownloadForOffline />
                     </a>
                   </div>
-                  {alreadySaved?.length !== 0 ? (
+                  {/* {alreadySaved?.length !== 0 ? (
                     <button type="button" className="px-5 py-1 text-base font-bold text-white bg-red-500 outline-none opacity-70 hover:opacity-100 rounded-3xl hover:shadow-md">
                       {pin?.save?.length}  Saved
                     </button>
@@ -81,21 +93,9 @@ const Pin = ({pin}) =>{
                     >
                       {pin?.save?.length}   {savingPost ? 'Saving' : 'Save'}
                     </button>
-                  )}
+                  )} */}
                 </div>
                 <div className="flex items-center justify-between w-full gap-2 ">
-                 <button
-                    className="flex items-center justify-center p-2 bg-white rounded-full outline-none opacity-75 w-15 h-15 text-dark hover:opacity-100"
-                    >
-                    <FcLike/>
-                    <p>{pin.likes_count}</p>
-                  </button>
-                  <button
-                    className="flex items-center justify-center p-2 bg-white rounded-full outline-none opacity-75 w-15 h-15 text-dark hover:opacity-100"
-                    >    
-                    <BiCommentDetail />
-                    <p>{pin.comments_count}</p>
-                    </button>
                   {
                     pin.created_by?.id === user.id && (
                     <button
@@ -113,6 +113,24 @@ const Pin = ({pin}) =>{
                 </div>
               </div>
             )}
+          </div>
+          <div className="flex items-center space-x-4">
+            <button
+              className="flex items-center justify-center p-2 bg-white rounded-full outline-none opacity-75 w-30 h-30 text-dark hover:opacity-100"
+              onClick={(e)=>{e.stopPropagation(); likePin(pin.id)}}
+            >
+              {
+                pin.is_liked ? <FcLike/> : <BsFillHeartFill/> 
+              }
+              <p>{pin.likes_count}</p>
+            </button>
+            <button
+                className="flex items-center justify-center p-2 bg-white rounded-full outline-none opacity-75 w-30 h-30 text-dark hover:opacity-100"
+                onClick={() => navigate(`/pin-detail/${pin.id}`)}
+              >    
+              <BiCommentDetail />
+              <p>{pin.comments_count}</p>
+            </button>
           </div>
           {
             pin.created_by.id !== user.id && (

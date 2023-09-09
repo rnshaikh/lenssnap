@@ -1,5 +1,5 @@
 from django.core.cache import cache
-from django.db.models import Subquery, OuterRef, Prefetch, Count
+from django.db.models import Prefetch, Count, Q
 from django.shortcuts import get_object_or_404
 
 from rest_framework.decorators import action
@@ -39,8 +39,13 @@ class PinList(viewsets.ModelViewSet):
         if user_cache and user_cache.get('home_timeline'):
             pins = user_cache.get('home_timeline')
         else:
-            pins = Pin.objects.select_related().filter(created_by=user).annotate(likes_count=Count('likes', distinct=True),
-                                                                                 comments_count=Count('comments', distinct=True)).order_by('-created_at')
+            pins = Pin.objects.select_related().filter(
+                    created_by=user
+                    ).annotate(
+                    likes_count=Count('likes', distinct=True),
+                    comments_count=Count('comments', distinct=True),
+                    is_liked=Count('likes', filter=Q(likes__like_by=user), distinct=True)
+                    ).order_by('-created_at')
             pins = PinSerializerReadOnly(pins, many=True)
             pins = pins.data
             cache_obj.load_user_data(request.user)
@@ -70,7 +75,8 @@ class PinList(viewsets.ModelViewSet):
     def retrieve(self, request, pk):
 
         pins = Pin.objects.select_related().filter(id=pk).annotate(likes_count=Count('likes', distinct=True),
-                                                                   comments_count=Count('comments', distinct=True))
+                                                                   comments_count=Count('comments', distinct=True),
+                                                                   is_liked=Count('likes', filter=Q(likes__like_by=request.user), distinct=True))
         if pins:
             serializer = PinSerializerReadOnly(pins[0])
             return Response({
@@ -117,9 +123,18 @@ class PinList(viewsets.ModelViewSet):
     def comments(self, request, pk):
 
         pin = get_object_or_404(Pin, id=pk)
-        comments = pin.comments.filter(parent=None).select_related().prefetch_related(
-                    'replies',
-                    ).annotate(likes_count=Count('likes', distinct=True)).order_by('-created_at')
+        comments = pin.comments.filter(parent=None).select_related(
+                    ).prefetch_related(
+                    Prefetch(
+                        'replies',
+                        queryset=Comment.objects.filter().annotate(
+                        likes_count=Count('likes', distinct=True),
+                        is_liked=Count('likes', filter=Q(likes__like_by=request.user),distinct=True)
+                        ))).annotate(
+                               likes_count=Count('likes', distinct=True),
+                               is_liked=Count('likes',
+                                              filter=Q(likes__like_by=request.user),
+                                              distinct=True)).order_by('-created_at')
         page = self.paginate_queryset(comments)
         serializer = PinCommentSerializer(page, many=True)
         return Response({

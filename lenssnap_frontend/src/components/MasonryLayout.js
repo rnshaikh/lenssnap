@@ -13,11 +13,12 @@ const breakpointColumnsObj = {
 };
 
 
-const MasonryLayout = ({pins}) =>{
+const MasonryLayout = ({pins, likeChange, setLikeChange}) =>{
 
     return(
         <Masonry className="flex animate-slide-fwd" breakpointCols={breakpointColumnsObj}>
-            {pins?.map((pin) => <Pin key={pin.id} pin={pin} className="w-max" />)}
+            {pins?.map((pin) => <Pin key={pin.id} pin={pin} likeChange={likeChange} setLikeChange={setLikeChange} 
+                                className="w-max"/>)}
         </Masonry>
     );
 
