@@ -181,11 +181,11 @@ export const saveUserPin = async (data)=>{
     }
 }
 
-export const likeUserPin = async(pinId) =>{
+export const likeUserPin = async(pinId, content_type) =>{
 
     try{
         let data = {
-            "content_type": "pin",
+            "content_type": content_type,
             "content_object": pinId
         }
 
@@ -219,6 +219,7 @@ export const likeUserPin = async(pinId) =>{
 export const CommentUserPin = async(body) =>{
 
     try{
+        debugger;
         let data = {
             "content_type": "pin",
             "content_object": body.pinId,

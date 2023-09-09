@@ -55,12 +55,13 @@ class PinCommentSerializer(serializers.ModelSerializer):
     created_by = UserSerializerReadOnly()
     updated_by = UserSerializerReadOnly()
     likes_count = serializers.IntegerField(required=False)
+    is_liked = serializers.IntegerField(required=False)
 
     class Meta:
         model = Comment
         fields = ('id', 'content', 'created_by', 'created_at',
                   'updated_by', 'updated_at', 'replies',
-                  'likes_count')
+                  'likes_count', 'is_liked')
         read_only_fields = fields
 
     def get_replies(self, instance):

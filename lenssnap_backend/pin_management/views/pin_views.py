@@ -123,9 +123,18 @@ class PinList(viewsets.ModelViewSet):
     def comments(self, request, pk):
 
         pin = get_object_or_404(Pin, id=pk)
-        comments = pin.comments.filter(parent=None).select_related().prefetch_related(
-                    'replies',
-                    ).annotate(likes_count=Count('likes', distinct=True)).order_by('-created_at')
+        comments = pin.comments.filter(parent=None).select_related(
+                    ).prefetch_related(
+                    Prefetch(
+                        'replies',
+                        queryset=Comment.objects.filter().annotate(
+                        likes_count=Count('likes', distinct=True),
+                        is_liked=Count('likes', filter=Q(likes__like_by=request.user),distinct=True)
+                        ))).annotate(
+                               likes_count=Count('likes', distinct=True),
+                               is_liked=Count('likes',
+                                              filter=Q(likes__like_by=request.user),
+                                              distinct=True)).order_by('-created_at')
         page = self.paginate_queryset(comments)
         serializer = PinCommentSerializer(page, many=True)
         return Response({
