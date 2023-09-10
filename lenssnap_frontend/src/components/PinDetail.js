@@ -149,7 +149,7 @@ const PinDetail = ({user}) =>{
                   </h1>
                   <p className="mt-3">{pinDetail.description}</p>
                 </div>
-                <Link to={`/user-profile/${pinDetail?.created_by}`} className="flex items-center gap-2 mt-5 bg-white rounded-lg ">
+                <Link to={`/user/hometimeline/${pinDetail?.created_by?.id}`} className="flex items-center gap-2 mt-5 bg-white rounded-lg ">
                   <img src={pinDetail.created_by?.picture} className="w-10 h-10 rounded-full" alt="user-profile" />
                   <p className="font-bold">{pinDetail.created_by?.first_name + " "+ pinDetail.created_by?.last_name }</p>
                 </Link>

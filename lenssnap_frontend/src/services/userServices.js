@@ -136,3 +136,80 @@ export const getUserTimeLine = async(userId)=>{
         return response   
     }
 }
+
+
+export const getUserFollowers = async(userId)=>{
+
+    try{
+        
+        debugger;
+        
+        const params = {
+            "user": userId,
+            "page_size":10000
+        }
+
+        const config = {
+            headers : {
+                "content-type": "application/json",
+            },
+            params
+        }
+
+        const res = await axios.get(`/api/followers/`,config)
+        if(res.status === 200){
+            let response = {"data": res.data.data, "error":null};
+            return response
+        }
+        else if(res.status===401){
+            localStorage.clear()
+        }
+        else{
+            let response = {"data": null, "error":res.response.data.detail};
+            return response
+        }
+
+    }
+    catch(error){
+        let response = {"data": null, "error":error.response.data.detail};
+        return response   
+    }
+}
+
+export const getUserFollowing = async(userId)=>{
+
+    try{
+        
+        debugger;
+        
+        const params = {
+            "user": userId,
+            "page_size":10000
+        }
+
+        const config = {
+            headers : {
+                "content-type": "application/json",
+            },
+            params
+        }
+
+        const res = await axios.get(`/api/followers/following/`,config)
+        if(res.status === 200){
+            let response = {"data": res.data.data, "error":null};
+            return response
+        }
+        else if(res.status===401){
+            localStorage.clear()
+        }
+        else{
+            let response = {"data": null, "error":res.response.data.detail};
+            return response
+        }
+
+    }
+    catch(error){
+        let response = {"data": null, "error":error.response.data.detail};
+        return response   
+    }
+}

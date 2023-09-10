@@ -7,12 +7,13 @@ import { AiOutlineLogout } from "react-icons/ai";
 
 import Spinner from "../components/Spinner";
 import MasonryLayout from "../components/MasonryLayout";
+import UserList from "../components/UserList";
 
-import { getUserHomeTimeLine } from "../services/userServices";
+import { getUserHomeTimeLine, getUserFollowers, getUserFollowing } from "../services/userServices";
 import { getUserPins } from "../services/pinServices";
 
 const activeBtnStyles = 'bg-red-500 text-white font-bold p-2 rounded-full w-60 outline-none';
-const notActiveBtnStyles = 'bg-primary mr-4 text-black font-bold p-2 rounded-full w-20 outline-none';
+const notActiveBtnStyles = 'bg-primary mr-4 text-black font-bold p-2 rounded-full w-60 outline-none';
 
 
 const HomeTimeLine = () =>{
@@ -22,10 +23,14 @@ const HomeTimeLine = () =>{
     const [pins, setPins] = useState([]);
     const [text, setText] = useState('Created');
     const [likeChange, setLikeChange] = useState(false);
-    const [activeBtn, setActiveBtn] = useState('created');
+    const [activeBtn, setActiveBtn] = useState('pins');
+    const [followers, setFollowers] = useState([]);
+    const [following, setFollowing] = useState([])
+
+
     const params = useParams();
     
-    console.log("rendering hometimeline")
+    console.log("rendering hometimeline", followers, following, activeBtn)
     
     useEffect(() => {
         debugger;
@@ -42,7 +47,8 @@ const HomeTimeLine = () =>{
             }
         }
         
-        fetchUserHomeTimeLine()
+        fetchUserHomeTimeLine();
+        setActiveBtn('pins');
     
     }, [params.id])
 
@@ -63,6 +69,42 @@ const HomeTimeLine = () =>{
         fetchPins()
     
     }, [params.id, likeChange])
+
+    useEffect(() => {
+      async function fetchUserFollowers(){
+
+        const re = await getUserFollowers(params.id)
+            if(re.error){
+              window.bus.publish("alert", {"msg":re.error, "alertType":"error"});
+            }
+            else
+            { 
+              setFollowers(re.data.results)
+
+            }
+      }
+      fetchUserFollowers()
+      
+    }, [params.id])
+
+
+    useEffect(() => {
+      async function fetchUserFollowing(){
+
+        const re = await getUserFollowing(params.id)
+            if(re.error){
+              window.bus.publish("alert", {"msg":re.error, "alertType":"error"});
+            }
+            else
+            { 
+              setFollowing(re.data.results)
+
+            }
+      }
+      fetchUserFollowing()
+      
+    }, [params.id])
+    
     
     const logout = ()=>{
 
@@ -119,8 +161,9 @@ const HomeTimeLine = () =>{
             type="button"
             onClick={(e) => {
               setText(e.target.textContent);
+              setActiveBtn('pins');
             }}
-            className={activeBtnStyles}
+            className={`${activeBtn === 'pins' ? activeBtnStyles : notActiveBtnStyles}`}
           >
             {user.pins_count}
             <div>Pins</div>
@@ -129,8 +172,9 @@ const HomeTimeLine = () =>{
             type="button"
             onClick={(e) => {
               setText(e.target.textContent);
+              setActiveBtn('followers');
             }}
-            className={activeBtnStyles}
+            className={`${activeBtn === 'followers' ? activeBtnStyles : notActiveBtnStyles}`}
           >
             {user.followers_count}
             <div>Followers</div>
@@ -139,22 +183,30 @@ const HomeTimeLine = () =>{
             type="button"
             onClick={(e) => {
               setText(e.target.textContent);
-              setActiveBtn('saved');
+              setActiveBtn('following');
             }}
-            className={activeBtnStyles}
+            className={`${activeBtn === 'following' ? activeBtnStyles : notActiveBtnStyles}`}
           >
             {user.following_count}
             <div>Following</div>
           </button>
         </div>
-        {pins?.length > 0 ?
+
+        
+        {activeBtn == "pins"?
+          pins?.length > 0 ?
             <div className="px-2">
                 <MasonryLayout pins={pins} likeChange={likeChange} setLikeChange={setLikeChange}/>
             </div>
-        :
+          :
             <div className="flex items-center justify-center w-full mt-2 font-bold text-1xl">
             No Pins Found!
             </div>
+          :
+          activeBtn == "followers"?
+          <UserList users={followers}  follower={true}/>
+          :
+          <UserList users={following} follower={false}/>
         }
       </div>
 
