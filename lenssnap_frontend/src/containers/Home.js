@@ -8,6 +8,7 @@ import logo from '../assets/lens_logo.png';
 import Alert from "../components/Alert";
 import Sidebar from '../components/Sidebar';
 import HomeTimeLine from './HomeTimeLine';
+import UserFind from "./UserFind";
 import Pins from './Pins';
 
 
@@ -48,6 +49,7 @@ const Home = () =>{
         </div>
           <div className="flex-1 h-screen pb-2 overflow-y-scroll"  ref={scrollRef}> 
             <Routes>
+              <Route path="/user/find" element={<UserFind/>}/>
               <Route path="/user/hometimeline/:id" element={<HomeTimeLine/>}/>
               <Route path="/*" element={<Pins user={user && user} />} />
             </Routes>

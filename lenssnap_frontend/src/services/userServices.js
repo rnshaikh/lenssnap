@@ -49,7 +49,7 @@ export const getUserProfile = async() =>{
             },
         }
 
-        const res = await axios.get(`/api/users/`,config)
+        const res = await axios.get(`/api/users/profile/`,config)
         if(res.status === 200){
 
             localStorage.setItem('user',JSON.stringify(res.data.data))

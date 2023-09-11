@@ -3,6 +3,8 @@ import { Link, NavLink } from 'react-router-dom';
 
 import { RiHomeFill } from 'react-icons/ri';
 import { IoIosArrowForward } from 'react-icons/io';
+import { BsFillPersonPlusFill } from 'react-icons/bs';
+
 import logo from '../assets/lens_logo.png';
 
 
@@ -37,6 +39,14 @@ const Sidebar = ({closeToggle, user})=>{
                 >
                     <RiHomeFill />
                     Home
+                </NavLink>
+                <NavLink
+                    to={`/user/find`}
+                    className={({ isActive }) => (isActive ? isActiveStyle : isNotActiveStyle)}
+                    onClick={handleCloseSidebar}
+                >
+                    <BsFillPersonPlusFill />
+                    Find Friend
                 </NavLink>
                 </div>
             </div>
