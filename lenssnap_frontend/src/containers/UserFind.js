@@ -1,24 +1,97 @@
-import React from "react";
+import React, { useEffect, useState} from "react";
 
+import { Link } from "react-router-dom";
+
+import { getUserForFollow, followUser, unFollowUser } from '../services/userServices';
 
 const UserFind = ()=>{
 
+    const [users, setUsers] = useState([]);
 
+    useEffect(() => {
+        async function fetchUser(){
+          const re = await getUserForFollow()
+          if(re.error){
+              window.bus.publish("alert", {"msg":re.error, "alertType":"error"});
+          }
+          else
+          {     
+              debugger;
+              setUsers(re.data.results);
+          }
+        }
+        fetchUser();
+      
+      }, [])
+
+    
+    const userFollow = async(userId)=>{
+
+        let re = await followUser(userId)
+        if(re.error){
+            window.bus.publish("alert", {"msg":re.error, "alertType":"error"});
+        }
+        else
+        {     
+            debugger;
+            
+        }
+    }
+
+    const userUnFollow = async(userId)=>{
+
+        let re = await unFollowUser(userId)
+        if(re.error){
+            window.bus.publish("alert", {"msg":re.error, "alertType":"error"});
+        }
+        else
+        {     
+            debugger;
+            
+        }
+    }
+
+    const usersList = users.map(user=>{
+
+        return(
+                <li class="py-3 sm:py-4" key={user.id}>
+                    <div class="flex items-center space-x-4">
+                        <div class="flex-shrink-0">
+                        <Link to={`/user/hometimeline/${user?.id}`}>
+                            <img class="w-8 h-8 rounded-full" src={user?.picture}/>
+                        </Link>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                        <Link to={`/user/hometimeline/${user?.id}`}>
+                            <p class="text-sm font-medium text-gray-900 truncate dark:text-white">
+                                {user?.first_name +" "+ user?.last_name} 
+                            </p>
+                        </Link>
+                        </div>
+                        <div class="inline-flex items-center text-base font-semibold text-gray-900 dark:text-white">
+                        <button
+                            type="button"
+                            className="px-6 py-2 text-base font-semibold text-white bg-red-500 rounded-full outline-none"
+                            onClick={(e)=>{
+                                e.stopPropagation();
+                                userFollow(user.id);
+
+                            }}
+                        >
+                            {true ? 'Follow' : 'Done'}
+                        </button>
+                        </div>
+                    </div>
+                </li>
+            ) 
+    })
 
     return (
     
-        <div className="relative items-center justify-center h-full pb-2">
-        <div className="flex flex-col pb-5">
-            <div className="relative flex flex-col mb-7">
-            <div className="flex flex-col items-center justify-center">
-            </div>
-            <div className="absolute top-0 right-0 p-2 z-1">
-            </div>
-            <div className="space-x-1 text-center mb-7">
-                <h1>Find Friends</h1>F
-            </div>
-        </div>
-        </div>
+        <div class="flow-root">
+        <ul role="list" class="divide-y divide-gray-200 dark:divide-gray-700">
+            {usersList}
+        </ul>
         </div>
     )
 

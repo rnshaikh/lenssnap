@@ -213,3 +213,120 @@ export const getUserFollowing = async(userId)=>{
         return response   
     }
 }
+
+
+export const getUserForFollow = async(userId)=>{
+
+    try{
+        
+        debugger;
+        const params = {
+            "page_size":10000
+        }
+
+        const config = {
+            headers : {
+                "content-type": "application/json",
+            },
+            params
+        }
+
+        const res = await axios.get(`/api/users/`,config)
+        if(res.status === 200){
+            let response = {"data": res.data.data, "error":null};
+            return response
+        }
+        else if(res.status===401){
+            localStorage.clear()
+        }
+        else{
+            let response = {"data": null, "error":res.response.data.detail};
+            return response
+        }
+
+    }
+    catch(error){
+        let response = {"data": null, "error":error.response.data.detail};
+        return response   
+    }
+}
+
+
+export const followUser = async(userId) =>{
+
+
+    try{
+        
+        debugger;
+        const config = {
+            headers : {
+                "content-type": "application/json",
+            }
+        }
+
+        const data = {
+            "followed_to": userId
+        }
+
+        const res = await axios.post(`/api/followers/`, data)
+        if(res.status === 200){
+            let response = {"data": res.data.data, "error":null};
+            return response
+        }
+        else if(res.status===401){
+            localStorage.clear()
+        }
+        else{
+            let response = {"data": null, "error":res.response.data.detail};
+            return response
+        }
+
+    }
+    catch(error){
+        let response = {"data": null, "error":error.response.data.detail};
+        return response   
+    }
+
+
+}
+
+
+
+export const unFollowUser = async(userId) =>{
+
+
+    try{
+        
+        debugger;
+        const config = {
+            headers : {
+                "content-type": "application/json",
+            }
+        }
+
+        const data = {
+            "followed_to": userId
+        }
+
+        const res = await axios.post(`/api/followers/unfollow/`, data)
+        if(res.status === 200){
+            let response = {"data": res.data.data, "error":null};
+            return response
+        }
+        else if(res.status===401){
+            localStorage.clear()
+        }
+        else{
+            let response = {"data": null, "error":res.response.data.detail};
+            return response
+        }
+
+    }
+    catch(error){
+        let response = {"data": null, "error":error.response.data.detail};
+        return response   
+    }
+
+
+}
+

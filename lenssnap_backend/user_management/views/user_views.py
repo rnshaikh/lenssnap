@@ -8,26 +8,30 @@ from rest_framework.decorators import action
 from user_management.models import User
 from user_management.serializers import UserSerializerReadOnly
 
+from lenssnap_backend.custom_pagination import StandardPageNumberPagination
+
 
 class UserProfileView(viewsets.ModelViewSet):
 
     model = User
     permission_classes = (IsAuthenticated,)
     serializer_class = UserSerializerReadOnly
+    pagination_class = StandardPageNumberPagination
     queryset = User.objects.all()
 
     def list(self, request):
-        import pdb
-        pdb.set_trace()
+
         following_list = request.user.followers_by.all().values_list('followed_to__id', flat=True)
         users = User.objects.exclude(
                 id__in=following_list
                 ).all()
-        serializer = UserSerializerReadOnly(users, many=True)
+
+        page = self.paginate_queryset(users)
+        serializer = UserSerializerReadOnly(page, many=True)
 
         return Response({
             "msg": "user detail fetch successfully",
-            "data": serializer.data
+            "data": self.get_paginated_response(serializer.data).data
             })
 
     def create(self, request):
