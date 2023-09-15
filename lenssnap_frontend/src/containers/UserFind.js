@@ -7,6 +7,8 @@ import { getUserForFollow, followUser, unFollowUser } from '../services/userServ
 const UserFind = ()=>{
 
     const [users, setUsers] = useState([]);
+    const [followed, setFollowed] = useState([]);
+
 
     useEffect(() => {
         async function fetchUser(){
@@ -34,6 +36,8 @@ const UserFind = ()=>{
         else
         {     
             debugger;
+            let userIds = [...followed, userId]
+            setFollowed(userIds);
             
         }
     }
@@ -47,6 +51,8 @@ const UserFind = ()=>{
         else
         {     
             debugger;
+            let userIds = followed.filter(id => id != userId);
+            setFollowed(userIds)
             
         }
     }
@@ -74,11 +80,17 @@ const UserFind = ()=>{
                             className="px-6 py-2 text-base font-semibold text-white bg-red-500 rounded-full outline-none"
                             onClick={(e)=>{
                                 e.stopPropagation();
-                                userFollow(user.id);
 
+                                if (followed.includes(user.id)){
+                                    userUnFollow(user.id)
+                    
+                                }
+                                else{
+                                    userFollow(user.id);
+                                }
                             }}
                         >
-                            {true ? 'Follow' : 'Done'}
+                            {followed.includes(user.id) ? 'UnFollow' : 'Follow'}
                         </button>
                         </div>
                     </div>

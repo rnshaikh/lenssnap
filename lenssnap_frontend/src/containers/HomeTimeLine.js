@@ -9,7 +9,7 @@ import Spinner from "../components/Spinner";
 import MasonryLayout from "../components/MasonryLayout";
 import UserList from "../components/UserList";
 
-import { getUserHomeTimeLine, getUserFollowers, getUserFollowing } from "../services/userServices";
+import { getUserHomeTimeLine, getUserFollowers, getUserFollowing, followUser, unFollowUser} from "../services/userServices";
 import { getUserPins } from "../services/pinServices";
 
 const activeBtnStyles = 'bg-red-500 text-white font-bold p-2 rounded-full w-60 outline-none';
@@ -26,9 +26,11 @@ const HomeTimeLine = () =>{
     const [activeBtn, setActiveBtn] = useState('pins');
     const [followers, setFollowers] = useState([]);
     const [following, setFollowing] = useState([])
-
+    const [loginUserFollowing, setLoginUserFollowing] = useState(false);
 
     const params = useParams();
+
+    const userObj = localStorage.user? JSON.parse(localStorage.user) : null; 
     
     console.log("rendering hometimeline", followers, following, activeBtn)
     
@@ -50,7 +52,7 @@ const HomeTimeLine = () =>{
         fetchUserHomeTimeLine();
         setActiveBtn('pins');
     
-    }, [params.id])
+    }, [params.id, loginUserFollowing])
 
     useEffect(() => {
         async function fetchPins(){
@@ -61,7 +63,7 @@ const HomeTimeLine = () =>{
             }
             else
             { 
-                setPins(re.data.results)
+              setPins(re.data.results)
 
             }
         }
@@ -79,13 +81,17 @@ const HomeTimeLine = () =>{
             }
             else
             { 
+              debugger;
+              let followersUser = re.data.results
               setFollowers(re.data.results)
+              let uObj = followersUser.filter(u=> u?.followed_by?.id == userObj.id)
+              uObj.length===0?setLoginUserFollowing(false):setLoginUserFollowing(true);
 
             }
       }
       fetchUserFollowers()
       
-    }, [params.id])
+    }, [params.id, loginUserFollowing])
 
 
     useEffect(() => {
@@ -104,6 +110,33 @@ const HomeTimeLine = () =>{
       fetchUserFollowing()
       
     }, [params.id])
+
+
+    const userFollow = async(userId)=>{
+      debugger;
+      let re = await followUser(userId)
+      if(re.error){
+          window.bus.publish("alert", {"msg":re.error, "alertType":"error"});
+      }
+      else
+      {     
+        setLoginUserFollowing(true);
+          
+      }
+  }
+
+  const userUnFollow = async(userId)=>{
+
+      debugger;
+      let re = await unFollowUser(userId)
+      if(re.error){
+          window.bus.publish("alert", {"msg":re.error, "alertType":"error"});
+      }
+      else
+      {     
+        setLoginUserFollowing(false);
+      }
+    }
     
     
     const logout = ()=>{
@@ -114,6 +147,8 @@ const HomeTimeLine = () =>{
     }
 
     if (!user) return <Spinner message="Loading profile" />;
+
+    console.log("userFollowing", loginUserFollowing)
 
   return (
     <div className="relative items-center justify-center h-full pb-2">
@@ -136,7 +171,16 @@ const HomeTimeLine = () =>{
             <div>
               {user.bio}
             </div>
-
+            <button
+              type="button"
+              className="px-6 py-2 text-base font-semibold text-white bg-red-500 rounded-full outline-none"
+              onClick={(e)=>{
+              e.stopPropagation();
+              loginUserFollowing ? userUnFollow(user.id):userFollow(user.id);
+            }}
+            >
+              {loginUserFollowing ? 'UnFollow' : 'Follow'}
+            </button>
           </h1>
           <div className="absolute top-0 right-0 p-2 z-1">
               <GoogleLogout

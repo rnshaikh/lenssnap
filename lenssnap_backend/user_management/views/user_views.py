@@ -22,6 +22,8 @@ class UserProfileView(viewsets.ModelViewSet):
     def list(self, request):
 
         following_list = request.user.followers_by.all().values_list('followed_to__id', flat=True)
+        following_list = list(following_list)
+        following_list.append(request.user.id)
         users = User.objects.exclude(
                 id__in=following_list
                 ).all()
