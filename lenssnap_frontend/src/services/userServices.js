@@ -27,12 +27,16 @@ export const getAccessToken= async(token)=>{
 
         }
         else{
+
             let response = {"data": null, "error":res.response.data.detail};
             return response
         }
 
     }
     catch(error){
+        if (error?.response.status === 401){
+            localStorage.clear()
+        }
         let response = {"data": null, "error":error.response.data.detail};
         return response
     }
@@ -57,6 +61,9 @@ export const getUserProfile = async() =>{
         }
     }
     catch(error){
+        if (error?.response.status === 401){
+            localStorage.clear()
+        }
         return error
     }
 }
@@ -66,7 +73,7 @@ export const getUserHomeTimeLine = async(userId) =>{
 
     try{
         
-        debugger;
+        ;
         const params = {
             "user": userId
         }
@@ -93,6 +100,9 @@ export const getUserHomeTimeLine = async(userId) =>{
 
     }
     catch(error){
+        if (error?.response.status === 401){
+            localStorage.clear()
+        }
         let response = {"data": null, "error":error.response.data.detail};
         return response
         
@@ -103,7 +113,7 @@ export const getUserTimeLine = async(userId)=>{
 
     try{
         
-        debugger;
+        ;
         
         const params = {
             "user": userId,
@@ -132,6 +142,9 @@ export const getUserTimeLine = async(userId)=>{
 
     }
     catch(error){
+        if (error?.response.status === 401){
+            localStorage.clear()
+        }
         let response = {"data": null, "error":error.response.data.detail};
         return response   
     }
@@ -142,7 +155,7 @@ export const getUserFollowers = async(userId)=>{
 
     try{
         
-        debugger;
+        ;
         
         const params = {
             "user": userId,
@@ -171,6 +184,9 @@ export const getUserFollowers = async(userId)=>{
 
     }
     catch(error){
+        if (error?.response.status === 401){
+            localStorage.clear()
+        }
         let response = {"data": null, "error":error.response.data.detail};
         return response   
     }
@@ -180,7 +196,7 @@ export const getUserFollowing = async(userId)=>{
 
     try{
         
-        debugger;
+        ;
         
         const params = {
             "user": userId,
@@ -209,6 +225,9 @@ export const getUserFollowing = async(userId)=>{
 
     }
     catch(error){
+        if (error?.response.status === 401){
+            localStorage.clear()
+        }
         let response = {"data": null, "error":error.response.data.detail};
         return response   
     }
@@ -219,7 +238,7 @@ export const getUserForFollow = async(userId)=>{
 
     try{
         
-        debugger;
+        ;
         const params = {
             "page_size":10000
         }
@@ -246,6 +265,9 @@ export const getUserForFollow = async(userId)=>{
 
     }
     catch(error){
+        if (error?.response.status === 401){
+            localStorage.clear()
+        }
         let response = {"data": null, "error":error.response.data.detail};
         return response   
     }
@@ -257,7 +279,7 @@ export const followUser = async(userId) =>{
 
     try{
         
-        debugger;
+        ;
         const config = {
             headers : {
                 "content-type": "application/json",
@@ -268,7 +290,7 @@ export const followUser = async(userId) =>{
             "followed_to": userId
         }
 
-        const res = await axios.post(`/api/followers/`, data)
+        const res = await axios.post(`/api/followers/`, data, config)
         if(res.status === 200){
             let response = {"data": res.data.data, "error":null};
             return response
@@ -283,6 +305,9 @@ export const followUser = async(userId) =>{
 
     }
     catch(error){
+        if (error?.response.status === 401){
+            localStorage.clear()
+        }
         let response = {"data": null, "error":error.response.data.detail};
         return response   
     }
@@ -297,7 +322,7 @@ export const unFollowUser = async(userId) =>{
 
     try{
         
-        debugger;
+        ;
         const config = {
             headers : {
                 "content-type": "application/json",
@@ -308,7 +333,7 @@ export const unFollowUser = async(userId) =>{
             "followed_to": userId
         }
 
-        const res = await axios.post(`/api/followers/unfollow/`, data)
+        const res = await axios.post(`/api/followers/unfollow/`, data, config)
         if(res.status === 200){
             let response = {"data": res.data.data, "error":null};
             return response
@@ -323,6 +348,9 @@ export const unFollowUser = async(userId) =>{
 
     }
     catch(error){
+        if (error?.response.status === 401){
+            localStorage.clear()
+        }
         let response = {"data": null, "error":error.response.data.detail};
         return response   
     }

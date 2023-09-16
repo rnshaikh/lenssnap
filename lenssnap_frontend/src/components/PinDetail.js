@@ -8,7 +8,7 @@ import {BsFillHeartFill} from 'react-icons/bs';
 import { MdDownloadForOffline } from 'react-icons/md';
 
 import Spinner from "./Spinner";
-import MasonryLayout from "./MasonryLayout";
+
 
 import { getPinDetail, getPinComments, likeUserPin, CommentUserPin } from "./../services/pinServices";
 
@@ -28,9 +28,8 @@ const PinDetail = ({user}) =>{
     useEffect(() => {
 
         async function fetchPinDetail(){
-            debugger;
-            const resp = await getPinDetail(params.id)
-            console.log("Pin Detail", resp);
+
+            const resp = await getPinDetail(params.id);
             if(resp.error){
                 window.bus.publish("alert", {"msg":resp.error, "alertType":"error"});
               }
@@ -50,10 +49,9 @@ const PinDetail = ({user}) =>{
         fetchPinDetail()
     }, [params.id, likeChange, addingComment])
 
-    console.log("respolies", replies)
     const addComment = async(parent_id=null) => {
         if (comment) {
-          debugger;
+          ;
           setAddingComment(true);
           let data = {
             "content": comment,
@@ -74,7 +72,7 @@ const PinDetail = ({user}) =>{
       };
     
     const likePin = async(id, content_type) =>{
-        debugger;
+        ;
         let resp = await likeUserPin(id, content_type);
         if(resp.error){
           window.bus.publish("alert", {"msg":resp.error, "alertType":"error"});
@@ -100,7 +98,6 @@ const PinDetail = ({user}) =>{
         );
     }
     
-    console.log("pindeatil", pinDetail)
     return (
         <>
           {pinDetail && (
@@ -191,7 +188,7 @@ const PinDetail = ({user}) =>{
                       </div>
                     </div>
                     {
-                    currentReply && currentReply == item.id && (
+                    currentReply && currentReply === item.id && (
                     <div className="flex flex-wrap gap-3 mt-6">
                       
                     <Link to={`/user-profile/${user.id}`}>

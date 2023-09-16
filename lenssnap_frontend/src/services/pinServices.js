@@ -7,7 +7,7 @@ export const getUserPins = async(userId) =>{
 
     try{
         
-        debugger;
+        ;
         const params = {
             "user": userId,
             "page_size": 10000
@@ -35,6 +35,9 @@ export const getUserPins = async(userId) =>{
 
     }
     catch(error){
+        if (error?.response.status === 401){
+            localStorage.clear()
+        }
         let response = {"data": null, "error":error.response.data.detail};
         return response
         
@@ -68,6 +71,9 @@ export const deleteUserPin = async(pinId) =>{
 
     }
     catch(error){
+        if (error?.response.status === 401){
+            localStorage.clear()
+        }
         let response = {"data": null, "error":error.response.data.detail};
         return response
         
@@ -101,6 +107,9 @@ export const getPinDetail = async(pinId) =>{
 
     }
     catch(error){
+        if (error?.response.status === 401){
+            localStorage.clear()
+        }
         let response = {"data": null, "error":error.response.data.detail};
         return response
         
@@ -112,7 +121,7 @@ export const getPinComments = async(pinId) =>{
 
     try{
         
-        debugger;
+        ;
         const params = {
             "user": pinId,
             "page_size": 10000
@@ -140,6 +149,9 @@ export const getPinComments = async(pinId) =>{
 
     }
     catch(error){
+        if (error?.response.status === 401){
+            localStorage.clear()
+        }
         let response = {"data": null, "error":error.response.data.detail};
         return response
         
@@ -163,7 +175,7 @@ export const saveUserPin = async (data)=>{
             let response = {"data": res.data.data, "error":null};
             return response
         }
-        else if(res.status===401){
+        else if(res.status === 401){
             localStorage.clear()
         }
         else{
@@ -174,6 +186,10 @@ export const saveUserPin = async (data)=>{
 
     }
     catch(error){
+
+        if (error?.response.status === 401){
+            localStorage.clear()
+        }
 
         let response = {"data": null, "error":error.response.data.detail};
         return response
@@ -210,6 +226,9 @@ export const likeUserPin = async(pinId, content_type) =>{
         }
     }
     catch(error){
+        if (error?.response.status === 401){
+            localStorage.clear()
+        }
         let response = {"data": null, "error":error.response.data.detail};
         return response
     }
@@ -219,7 +238,7 @@ export const likeUserPin = async(pinId, content_type) =>{
 export const CommentUserPin = async(body) =>{
 
     try{
-        debugger;
+        ;
         let data = {
             "content_type": "pin",
             "content_object": body.pinId,
@@ -248,6 +267,9 @@ export const CommentUserPin = async(body) =>{
         }
     }
     catch(error){
+        if (error?.response.status === 401){
+            localStorage.clear()
+        }
         let response = {"data": null, "error":error.response.data.detail};
         return response
     }

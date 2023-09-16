@@ -16,9 +16,7 @@ import { setAuthToken } from "../utils/authToken";
 
 const Login = ()=>{
 
-    const navigate = useNavigate()
-
-    console.log("clientid", process.env.REACT_APP_GOOGLE_CLIENT_ID)
+    const navigate = useNavigate();
 
     useEffect(() => {
       function start() {
@@ -30,8 +28,7 @@ const Login = ()=>{
     });
 
     const responseGoogle = async(response) => {
-        debugger;
-        console.log(response);
+      
         if(response.error){
           alert("error", response.error);
           return;

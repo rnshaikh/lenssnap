@@ -32,10 +32,8 @@ const HomeTimeLine = () =>{
 
     const userObj = localStorage.user? JSON.parse(localStorage.user) : null; 
     
-    console.log("rendering hometimeline", followers, following, activeBtn)
-    
     useEffect(() => {
-        debugger;
+        ;
         async function fetchUserHomeTimeLine(){
 
             const userHome = await getUserHomeTimeLine(params.id)
@@ -81,17 +79,17 @@ const HomeTimeLine = () =>{
             }
             else
             { 
-              debugger;
+              ;
               let followersUser = re.data.results
               setFollowers(re.data.results)
-              let uObj = followersUser.filter(u=> u?.followed_by?.id == userObj.id)
+              let uObj = followersUser.filter(u=> u?.followed_by?.id === userObj.id)
               uObj.length===0?setLoginUserFollowing(false):setLoginUserFollowing(true);
 
             }
       }
       fetchUserFollowers()
       
-    }, [params.id, loginUserFollowing])
+    }, [params.id, loginUserFollowing, userObj?.id])
 
 
     useEffect(() => {
@@ -113,7 +111,7 @@ const HomeTimeLine = () =>{
 
 
     const userFollow = async(userId)=>{
-      debugger;
+      ;
       let re = await followUser(userId)
       if(re.error){
           window.bus.publish("alert", {"msg":re.error, "alertType":"error"});
@@ -127,7 +125,7 @@ const HomeTimeLine = () =>{
 
   const userUnFollow = async(userId)=>{
 
-      debugger;
+      ;
       let re = await unFollowUser(userId)
       if(re.error){
           window.bus.publish("alert", {"msg":re.error, "alertType":"error"});
@@ -147,8 +145,6 @@ const HomeTimeLine = () =>{
     }
 
     if (!user) return <Spinner message="Loading profile" />;
-
-    console.log("userFollowing", loginUserFollowing)
 
   return (
     <div className="relative items-center justify-center h-full pb-2">
@@ -171,16 +167,18 @@ const HomeTimeLine = () =>{
             <div>
               {user.bio}
             </div>
-            <button
-              type="button"
-              className="px-6 py-2 text-base font-semibold text-white bg-red-500 rounded-full outline-none"
-              onClick={(e)=>{
-              e.stopPropagation();
-              loginUserFollowing ? userUnFollow(user.id):userFollow(user.id);
-            }}
-            >
-              {loginUserFollowing ? 'UnFollow' : 'Follow'}
-            </button>
+            {user.id !== userObj.id && (
+              <button
+                  type="button"
+                  className="px-6 py-2 text-base font-semibold text-white bg-red-500 rounded-full outline-none"
+                onClick={(e)=>{
+                  e.stopPropagation();
+                  loginUserFollowing ? userUnFollow(user.id):userFollow(user.id);
+                }}
+              >
+                {loginUserFollowing ? 'UnFollow' : 'Follow'}
+              </button>
+            )}
           </h1>
           <div className="absolute top-0 right-0 p-2 z-1">
               <GoogleLogout
@@ -237,7 +235,7 @@ const HomeTimeLine = () =>{
         </div>
 
         
-        {activeBtn == "pins"?
+        {activeBtn === "pins"?
           pins?.length > 0 ?
             <div className="px-2">
                 <MasonryLayout pins={pins} likeChange={likeChange} setLikeChange={setLikeChange}/>
@@ -247,7 +245,7 @@ const HomeTimeLine = () =>{
             No Pins Found!
             </div>
           :
-          activeBtn == "followers"?
+          activeBtn === "followers"?
           <UserList users={followers}  follower={true}/>
           :
           <UserList users={following} follower={false}/>

@@ -18,7 +18,7 @@ const UserFind = ()=>{
           }
           else
           {     
-              debugger;
+              ;
               setUsers(re.data.results);
           }
         }
@@ -35,7 +35,7 @@ const UserFind = ()=>{
         }
         else
         {     
-            debugger;
+            ;
             let userIds = [...followed, userId]
             setFollowed(userIds);
             
@@ -50,8 +50,7 @@ const UserFind = ()=>{
         }
         else
         {     
-            debugger;
-            let userIds = followed.filter(id => id != userId);
+            let userIds = followed.filter(id => id !== userId);
             setFollowed(userIds)
             
         }
@@ -60,21 +59,21 @@ const UserFind = ()=>{
     const usersList = users.map(user=>{
 
         return(
-                <li class="py-3 sm:py-4" key={user.id}>
-                    <div class="flex items-center space-x-4">
-                        <div class="flex-shrink-0">
+                <li className="py-3 sm:py-4" key={user.id}>
+                    <div className="flex items-center space-x-4">
+                        <div className="flex-shrink-0">
                         <Link to={`/user/hometimeline/${user?.id}`}>
-                            <img class="w-8 h-8 rounded-full" src={user?.picture}/>
+                            <img className="w-8 h-8 rounded-full" src={user?.picture} alt="user-profile"/>
                         </Link>
                         </div>
-                        <div class="flex-1 min-w-0">
+                        <div className="flex-1 min-w-0">
                         <Link to={`/user/hometimeline/${user?.id}`}>
-                            <p class="text-sm font-medium text-gray-900 truncate dark:text-white">
+                            <p className="text-sm font-medium text-gray-900 truncate dark:text-white">
                                 {user?.first_name +" "+ user?.last_name} 
                             </p>
                         </Link>
                         </div>
-                        <div class="inline-flex items-center text-base font-semibold text-gray-900 dark:text-white">
+                        <div className="inline-flex items-center text-base font-semibold text-gray-900 dark:text-white">
                         <button
                             type="button"
                             className="px-6 py-2 text-base font-semibold text-white bg-red-500 rounded-full outline-none"
@@ -100,8 +99,8 @@ const UserFind = ()=>{
 
     return (
     
-        <div class="flow-root">
-        <ul role="list" class="divide-y divide-gray-200 dark:divide-gray-700">
+        <div className="flow-root">
+        <ul className="divide-y divide-gray-200 dark:divide-gray-700">
             {usersList}
         </ul>
         </div>

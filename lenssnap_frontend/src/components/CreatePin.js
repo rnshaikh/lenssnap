@@ -21,13 +21,12 @@ const CreatePin = ({user}) =>{
     const navigate = useNavigate()
 
     const uploadImage = (e)=>{
-        debugger;
+        ;
         setLoading(true);
         let fileObj = e.target.files[0]
         let supported_files = process.env.REACT_APP_SUPPORTED_FILES
         supported_files = supported_files.replace(/'/g, '"')
         supported_files = JSON.parse(supported_files)
-        console.log("s", supported_files)
         if(supported_files.includes(fileObj.type)){
             let url = URL.createObjectURL(fileObj)
             setFile(fileObj);
