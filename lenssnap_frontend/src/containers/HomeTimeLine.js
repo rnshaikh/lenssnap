@@ -7,12 +7,13 @@ import { AiOutlineLogout } from "react-icons/ai";
 
 import Spinner from "../components/Spinner";
 import MasonryLayout from "../components/MasonryLayout";
+import UserList from "../components/UserList";
 
-import { getUserHomeTimeLine } from "../services/userServices";
+import { getUserHomeTimeLine, getUserFollowers, getUserFollowing, followUser, unFollowUser} from "../services/userServices";
 import { getUserPins } from "../services/pinServices";
 
 const activeBtnStyles = 'bg-red-500 text-white font-bold p-2 rounded-full w-60 outline-none';
-const notActiveBtnStyles = 'bg-primary mr-4 text-black font-bold p-2 rounded-full w-20 outline-none';
+const notActiveBtnStyles = 'bg-primary mr-4 text-black font-bold p-2 rounded-full w-60 outline-none';
 
 
 const HomeTimeLine = () =>{
@@ -22,13 +23,17 @@ const HomeTimeLine = () =>{
     const [pins, setPins] = useState([]);
     const [text, setText] = useState('Created');
     const [likeChange, setLikeChange] = useState(false);
-    const [activeBtn, setActiveBtn] = useState('created');
+    const [activeBtn, setActiveBtn] = useState('pins');
+    const [followers, setFollowers] = useState([]);
+    const [following, setFollowing] = useState([])
+    const [loginUserFollowing, setLoginUserFollowing] = useState(false);
+
     const params = useParams();
-    
-    console.log("rendering hometimeline")
+
+    const userObj = localStorage.user? JSON.parse(localStorage.user) : null; 
     
     useEffect(() => {
-        debugger;
+        ;
         async function fetchUserHomeTimeLine(){
 
             const userHome = await getUserHomeTimeLine(params.id)
@@ -42,9 +47,10 @@ const HomeTimeLine = () =>{
             }
         }
         
-        fetchUserHomeTimeLine()
+        fetchUserHomeTimeLine();
+        setActiveBtn('pins');
     
-    }, [params.id])
+    }, [params.id, loginUserFollowing])
 
     useEffect(() => {
         async function fetchPins(){
@@ -55,7 +61,7 @@ const HomeTimeLine = () =>{
             }
             else
             { 
-                setPins(re.data.results)
+              setPins(re.data.results)
 
             }
         }
@@ -63,6 +69,73 @@ const HomeTimeLine = () =>{
         fetchPins()
     
     }, [params.id, likeChange])
+
+    useEffect(() => {
+      async function fetchUserFollowers(){
+
+        const re = await getUserFollowers(params.id)
+            if(re.error){
+              window.bus.publish("alert", {"msg":re.error, "alertType":"error"});
+            }
+            else
+            { 
+              ;
+              let followersUser = re.data.results
+              setFollowers(re.data.results)
+              let uObj = followersUser.filter(u=> u?.followed_by?.id === userObj.id)
+              uObj.length===0?setLoginUserFollowing(false):setLoginUserFollowing(true);
+
+            }
+      }
+      fetchUserFollowers()
+      
+    }, [params.id, loginUserFollowing, userObj?.id])
+
+
+    useEffect(() => {
+      async function fetchUserFollowing(){
+
+        const re = await getUserFollowing(params.id)
+            if(re.error){
+              window.bus.publish("alert", {"msg":re.error, "alertType":"error"});
+            }
+            else
+            { 
+              setFollowing(re.data.results)
+
+            }
+      }
+      fetchUserFollowing()
+      
+    }, [params.id])
+
+
+    const userFollow = async(userId)=>{
+      ;
+      let re = await followUser(userId)
+      if(re.error){
+          window.bus.publish("alert", {"msg":re.error, "alertType":"error"});
+      }
+      else
+      {     
+        setLoginUserFollowing(true);
+          
+      }
+  }
+
+  const userUnFollow = async(userId)=>{
+
+      ;
+      let re = await unFollowUser(userId)
+      if(re.error){
+          window.bus.publish("alert", {"msg":re.error, "alertType":"error"});
+      }
+      else
+      {     
+        setLoginUserFollowing(false);
+      }
+    }
+    
     
     const logout = ()=>{
 
@@ -94,7 +167,18 @@ const HomeTimeLine = () =>{
             <div>
               {user.bio}
             </div>
-
+            {user.id !== userObj.id && (
+              <button
+                  type="button"
+                  className="px-6 py-2 text-base font-semibold text-white bg-red-500 rounded-full outline-none"
+                onClick={(e)=>{
+                  e.stopPropagation();
+                  loginUserFollowing ? userUnFollow(user.id):userFollow(user.id);
+                }}
+              >
+                {loginUserFollowing ? 'UnFollow' : 'Follow'}
+              </button>
+            )}
           </h1>
           <div className="absolute top-0 right-0 p-2 z-1">
               <GoogleLogout
@@ -119,8 +203,9 @@ const HomeTimeLine = () =>{
             type="button"
             onClick={(e) => {
               setText(e.target.textContent);
+              setActiveBtn('pins');
             }}
-            className={activeBtnStyles}
+            className={`${activeBtn === 'pins' ? activeBtnStyles : notActiveBtnStyles}`}
           >
             {user.pins_count}
             <div>Pins</div>
@@ -129,8 +214,9 @@ const HomeTimeLine = () =>{
             type="button"
             onClick={(e) => {
               setText(e.target.textContent);
+              setActiveBtn('followers');
             }}
-            className={activeBtnStyles}
+            className={`${activeBtn === 'followers' ? activeBtnStyles : notActiveBtnStyles}`}
           >
             {user.followers_count}
             <div>Followers</div>
@@ -139,22 +225,30 @@ const HomeTimeLine = () =>{
             type="button"
             onClick={(e) => {
               setText(e.target.textContent);
-              setActiveBtn('saved');
+              setActiveBtn('following');
             }}
-            className={activeBtnStyles}
+            className={`${activeBtn === 'following' ? activeBtnStyles : notActiveBtnStyles}`}
           >
             {user.following_count}
             <div>Following</div>
           </button>
         </div>
-        {pins?.length > 0 ?
+
+        
+        {activeBtn === "pins"?
+          pins?.length > 0 ?
             <div className="px-2">
                 <MasonryLayout pins={pins} likeChange={likeChange} setLikeChange={setLikeChange}/>
             </div>
-        :
+          :
             <div className="flex items-center justify-center w-full mt-2 font-bold text-1xl">
             No Pins Found!
             </div>
+          :
+          activeBtn === "followers"?
+          <UserList users={followers}  follower={true}/>
+          :
+          <UserList users={following} follower={false}/>
         }
       </div>
 

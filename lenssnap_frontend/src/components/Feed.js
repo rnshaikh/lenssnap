@@ -13,13 +13,11 @@ const Feed = ()=>{
 
     const user = localStorage.user? JSON.parse(localStorage.user) : null; 
 
-    console.log("feed rendering", pins)
-
-
+    
     useEffect(() => {
       
         async function fetchUserTimeline(){
-            debugger;
+            ;
             const res = await getUserTimeLine(user.id)
             if(res.error){
               alert(res.error)
@@ -31,7 +29,7 @@ const Feed = ()=>{
         }
         fetchUserTimeline()
   
-      }, [likeChange]);
+      }, [likeChange, user?.id]);
 
     return (
         !loading ? 

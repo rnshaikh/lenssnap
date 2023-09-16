@@ -12,21 +12,21 @@ import { deleteUserPin, likeUserPin } from '../services/pinServices';
 const Pin = ({pin, likeChange, setLikeChange}) =>{
     
     const [postHovered, setPostHovered] = useState(false);
-    const [savingPost, setSavingPost] = useState(false);
+    // const [savingPost, setSavingPost] = useState(false);
 
     const navigate = useNavigate();
 
     const user = localStorage.getItem('user') !== 'undefined' ? JSON.parse(localStorage.getItem('user')) : localStorage.clear();
-    let alreadySaved = pin?.save?.filter((item) => item?.created_by?.id === user?.id);
-    alreadySaved = alreadySaved?.length > 0 ? alreadySaved : [];
+    // let alreadySaved = pin?.save?.filter((item) => item?.created_by?.id === user?.id);
+    // alreadySaved = alreadySaved?.length > 0 ? alreadySaved : [];
 
-    const savePin = (id) =>{
-        console.log("save id", id);
-    }
+    // const savePin = (id) =>{
+    //     console.log("save id", id);
+    // }
 
     const likePin = async(id) =>{
 
-      let resp = await likeUserPin(id);
+      let resp = await likeUserPin(id, "pin");
       if(resp.error){
         window.bus.publish("alert", {"msg":resp.error, "alertType":"error"});
       }
