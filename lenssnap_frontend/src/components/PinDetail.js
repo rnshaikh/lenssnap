@@ -3,14 +3,14 @@ import { useParams, Link } from "react-router-dom";
 
 import { BiCommentDetail } from 'react-icons/bi';
 import { FcLike } from 'react-icons/fc';
-import { AiOutlineComment } from 'react-icons/ai';
+import { AiOutlineComment, AiTwotoneDelete } from 'react-icons/ai';
 import {BsFillHeartFill} from 'react-icons/bs';
 import { MdDownloadForOffline } from 'react-icons/md';
 
 import Spinner from "./Spinner";
 
 
-import { getPinDetail, getPinComments, likeUserPin, CommentUserPin } from "./../services/pinServices";
+import { getPinDetail, getPinComments, likeUserPin, CommentUserPin,  deleteUserComment} from "./../services/pinServices";
 
 
 const PinDetail = ({user}) =>{
@@ -22,13 +22,13 @@ const PinDetail = ({user}) =>{
     const [likeChange, setLikeChange] = useState(false);
     const [addingComment, setAddingComment] = useState(false);
     const [currentReply, setCurrentReply] = useState(null);
-
+    const [flag, setFlag] = useState(false);
     // const [showReply, setShowReply] = useState()
 
     useEffect(() => {
 
         async function fetchPinDetail(){
-
+            debugger;
             const resp = await getPinDetail(params.id);
             if(resp.error){
                 window.bus.publish("alert", {"msg":resp.error, "alertType":"error"});
@@ -47,7 +47,18 @@ const PinDetail = ({user}) =>{
             }
         }
         fetchPinDetail()
-    }, [params.id, likeChange, addingComment])
+    }, [params.id, likeChange, addingComment,flag])
+
+    const deleteComment = async(commentId) =>{
+      let resp = await deleteUserComment(commentId);
+      if(resp.error){
+          window.bus.publish("alert", {"msg":resp.error, "alertType":"error"});
+          setComment("")
+        }
+      else{
+        setFlag(flag?false:true)
+      }
+    }
 
     const addComment = async(parent_id=null) => {
         if (comment) {
@@ -184,6 +195,19 @@ const PinDetail = ({user}) =>{
                           }
                         <p>{item.likes_count}</p>
                       </button>
+                      {item.created_by?.id === user.id && (
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                          e.stopPropagation();
+                          deleteComment(item.id);
+                          }}
+                          className="flex items-center justify-center p-2 bg-white rounded-full outline-none opacity-75 w-15 h-15 text-dark hover:opacity-100"
+                        >
+                        <AiTwotoneDelete />
+                        </button>
+                      )
+                      }
                       </div>
                       </div>
                     </div>
@@ -231,6 +255,19 @@ const PinDetail = ({user}) =>{
                               }
                               <p>{child.likes_count}</p>
                             </button>
+                            {child.created_by?.id === user.id && (
+                              <button
+                                type="button"
+                                onClick={(e) => {
+                                e.stopPropagation();
+                                deleteComment(child.id);
+                                }}
+                                className="flex p-2 mx-10 bg-white rounded-full outline-none opacity-75 w-15 h-15 text-dark hover:opacity-100"
+                              >
+                              <AiTwotoneDelete />
+                              </button>
+                            )
+                            }
                             </div>
                             </div>
                         </div>

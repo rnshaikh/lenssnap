@@ -275,3 +275,38 @@ export const CommentUserPin = async(body) =>{
     }
 
 }
+
+export const deleteUserComment = async(commentId) =>{
+
+    try{
+        
+        const config = {
+            headers : {
+                "content-type": "application/json",
+            }
+        }
+
+        const res = await axios.delete(`/api/comments/${commentId}/`,config)
+        if(res.status === 200){
+            let response = {"data": res.data.data, "error":null};
+            return response
+        }
+        else if(res.status===401){
+            localStorage.clear()
+        }
+        else{
+            let response = {"data": null, "error":res.response.data.detail};
+            return response
+        }
+
+    }
+    catch(error){
+        if (error?.response.status === 401){
+            localStorage.clear()
+        }
+        let response = {"data": null, "error":error.response.data.detail};
+        return response
+        
+    }
+
+}
