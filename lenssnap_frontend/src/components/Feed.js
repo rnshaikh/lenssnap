@@ -1,5 +1,7 @@
 import React, {useState, useEffect} from "react";
 
+import { useNavigate } from "react-router-dom";
+
 import MasonryLayout from "./MasonryLayout";
 import Spinner from "./Spinner";
 
@@ -12,13 +14,18 @@ const Feed = ()=>{
     const [likeChange, setLikeChange] = useState(false);
 
     const user = localStorage.user? JSON.parse(localStorage.user) : null; 
-
+    const navigate = useNavigate()
     
     useEffect(() => {
       
         async function fetchUserTimeline(){
-            ;
+
             const res = await getUserTimeLine(user.id)
+
+            if (res?.error === "401"){
+                navigate("/login");
+            }
+
             if(res.error){
               alert(res.error)
             }

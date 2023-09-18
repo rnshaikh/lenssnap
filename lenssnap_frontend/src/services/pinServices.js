@@ -37,6 +37,7 @@ export const getUserPins = async(userId) =>{
     catch(error){
         if (error?.response.status === 401){
             localStorage.clear()
+            return {"data": null, "error": "401"}
         }
         let response = {"data": null, "error":error.response.data.detail};
         return response
@@ -73,6 +74,7 @@ export const deleteUserPin = async(pinId) =>{
     catch(error){
         if (error?.response.status === 401){
             localStorage.clear()
+            return {"data": null, "error": "401"}
         }
         let response = {"data": null, "error":error.response.data.detail};
         return response
@@ -109,6 +111,7 @@ export const getPinDetail = async(pinId) =>{
     catch(error){
         if (error?.response.status === 401){
             localStorage.clear()
+            return {"data": null, "error": "401"}
         }
         let response = {"data": null, "error":error.response.data.detail};
         return response
@@ -151,6 +154,7 @@ export const getPinComments = async(pinId) =>{
     catch(error){
         if (error?.response.status === 401){
             localStorage.clear()
+            return {"data": null, "error": "401"}
         }
         let response = {"data": null, "error":error.response.data.detail};
         return response
@@ -189,6 +193,7 @@ export const saveUserPin = async (data)=>{
 
         if (error?.response.status === 401){
             localStorage.clear()
+            return {"data": null, "error": "401"}
         }
 
         let response = {"data": null, "error":error.response.data.detail};
@@ -228,6 +233,7 @@ export const likeUserPin = async(pinId, content_type) =>{
     catch(error){
         if (error?.response.status === 401){
             localStorage.clear()
+            return {"data": null, "error": "401"}
         }
         let response = {"data": null, "error":error.response.data.detail};
         return response
@@ -269,6 +275,7 @@ export const CommentUserPin = async(body) =>{
     catch(error){
         if (error?.response.status === 401){
             localStorage.clear()
+            return {"data": null, "error": "401"}
         }
         let response = {"data": null, "error":error.response.data.detail};
         return response
@@ -303,6 +310,7 @@ export const deleteUserComment = async(commentId) =>{
     catch(error){
         if (error?.response.status === 401){
             localStorage.clear()
+            return {"data": null, "error": "401"}
         }
         let response = {"data": null, "error":error.response.data.detail};
         return response
