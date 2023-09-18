@@ -36,6 +36,7 @@ export const getAccessToken= async(token)=>{
     catch(error){
         if (error?.response.status === 401){
             localStorage.clear()
+            return {"data": null, "error": "401"}
         }
         let response = {"data": null, "error":error.response.data.detail};
         return response
@@ -63,6 +64,7 @@ export const getUserProfile = async() =>{
     catch(error){
         if (error?.response.status === 401){
             localStorage.clear()
+            return {"data": null, "error": "401"}
         }
         return error
     }
@@ -102,6 +104,7 @@ export const getUserHomeTimeLine = async(userId) =>{
     catch(error){
         if (error?.response.status === 401){
             localStorage.clear()
+            return {"data": null, "error": "401"}
         }
         let response = {"data": null, "error":error.response.data.detail};
         return response
@@ -144,6 +147,7 @@ export const getUserTimeLine = async(userId)=>{
     catch(error){
         if (error?.response.status === 401){
             localStorage.clear()
+            return {"data": null, "error": "401"}
         }
         let response = {"data": null, "error":error.response.data.detail};
         return response   
@@ -186,6 +190,7 @@ export const getUserFollowers = async(userId)=>{
     catch(error){
         if (error?.response.status === 401){
             localStorage.clear()
+            return {"data": null, "error": "401"}
         }
         let response = {"data": null, "error":error.response.data.detail};
         return response   
@@ -227,6 +232,7 @@ export const getUserFollowing = async(userId)=>{
     catch(error){
         if (error?.response.status === 401){
             localStorage.clear()
+            return {"data": null, "error": "401"}
         }
         let response = {"data": null, "error":error.response.data.detail};
         return response   
@@ -267,6 +273,7 @@ export const getUserForFollow = async(userId)=>{
     catch(error){
         if (error?.response.status === 401){
             localStorage.clear()
+            return {"data": null, "error": "401"}
         }
         let response = {"data": null, "error":error.response.data.detail};
         return response   
@@ -307,6 +314,7 @@ export const followUser = async(userId) =>{
     catch(error){
         if (error?.response.status === 401){
             localStorage.clear()
+            return {"data": null, "error": "401"}
         }
         let response = {"data": null, "error":error.response.data.detail};
         return response   
@@ -350,6 +358,7 @@ export const unFollowUser = async(userId) =>{
     catch(error){
         if (error?.response.status === 401){
             localStorage.clear()
+            return {"data": null, "error": "401"}
         }
         let response = {"data": null, "error":error.response.data.detail};
         return response   
