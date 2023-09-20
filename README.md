@@ -115,7 +115,7 @@ add above env in .env file in frontend root directory.
 
     1. Followers List
 
-![Screenshot of Followers List.](/images/followingList.PNG)
+![Screenshot of Followers List.](/images/followersList.PNG)
 
     1. Find Friend
 
