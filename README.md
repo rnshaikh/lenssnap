@@ -87,4 +87,11 @@ add above env in .env file in frontend root directory.
 
     `
 
+# Images Of Features:
+
+    1. HomePage
+
+    ![Screenshot of HomePage.](/images/HomePage.PNG)
+
+
 
