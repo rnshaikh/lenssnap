@@ -91,7 +91,7 @@ add above env in .env file in frontend root directory.
 
     1. HomePage
 
-    ![Screenshot of HomePage.](images/HomePage.PNG)
+![Screenshot of HomePage.](images/HomePage.PNG)
 
 
 
