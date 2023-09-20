@@ -5,9 +5,10 @@ Image Sharing App
 Lenssnap is image sharing app where you connect with people and share your pics and life experience with
 them
 
-Stack: Django-Rest-Framework, LocalMemoryCache, React.js
+Stack: Django-Rest-Framework, LocalMemoryCache, React.js, google OAuth2, tailwind css.
 
-Feature:
+
+# Feature:
 
 1. Google Login
 1. Pin Crud Feature
@@ -18,12 +19,13 @@ Feature:
 1. User Timeline
 
 
-Installation:
-
 # Backend
+
+Installation:
 
 python >= 3.8
 
+create google oauth2
 create virtual env then follow following steps.
 
 ***Backend env variable***
@@ -49,10 +51,9 @@ create virtual env then follow following steps.
     `
 add above env in .env file in backend root directory.
 
+    `
+        pip install -r requirements.txt
+        python manage.py makemigrations
+        python manage.py runserver
 
-`
-    pip install -r requirements.txt
-    python manage.py makemigrations
-    python manage.py runserver
-
-`
+    `
