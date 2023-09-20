@@ -78,6 +78,13 @@ node >= v16.14.2
         REACT_APP_SUPPORTED_FILES - list of supported mime type for pin
     `
 
+add above env in .env file in frontend root directory.
 
+
+    `
+        npm install
+        npm run start
+
+    `
 
 
