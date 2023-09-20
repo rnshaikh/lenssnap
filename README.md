@@ -92,31 +92,3 @@ add above env in .env file in frontend root directory.
     1. HomePage
 
     ![Screenshot of HomePage.](/images/HomePage.png)
-
-    1. UserTimeline
-
-    ![Screenshot of UserTimeline.](/images/UserTimeline.png)
-
-    1. UserHomeTimeline
-
-    ![Screenshot of UserHomeTimeline.](/images/HomeTimeline.png)
-
-    1. Pin Detail
-
-    ![Screenshot of Pin detail.](/images/PinDetail.png)
-
-    1. add Pin
-
-    ![Screenshot of add Pin.](/images/addPin.png)
-
-    1. Following List
-
-    ![Screenshot of Following List.](/images/FollowingList.png)
-
-    1. Followers List
-
-    ![Screenshot of Followers List.](/images/followingList.png)
-
-    1. Find Friend
-
-    ![Screenshot of Find Friend.](/images/findFriend.png)
