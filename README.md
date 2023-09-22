@@ -87,7 +87,7 @@ add above env in .env file in frontend root directory.
 
     `
 
-# backend Cachine mechanism:
+# backend Caching mechanism:
 
     At start of application all users data get loaded into cache to make it blazing fast.
     each user have following data in cache.
@@ -101,7 +101,7 @@ add above env in .env file in frontend root directory.
     when any user created pin then following thing happen:
     its home_timeline get updated with new pin
 
-    ***Fan Out***
+***Fan Out***
 
     take all follower_ids iterate over it.
     update there user_timeline.
