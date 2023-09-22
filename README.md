@@ -87,6 +87,27 @@ add above env in .env file in frontend root directory.
 
     `
 
+# backend Caching mechanism:
+
+    At start of application all users data get loaded into cache to make it blazing fast.
+    each user have following data in cache.
+    {"user-id": {
+        "follower_ids": [],
+        "user_timeline": [],
+        "home_timeline": []
+        }
+    }
+
+    when any user created pin then following thing happen:
+    its home_timeline get updated with new pin
+
+***Fan Out***
+
+    take all follower_ids iterate over it.
+    update there user_timeline.
+
+
+
 # Images Of Features:
 
     1. HomePage
